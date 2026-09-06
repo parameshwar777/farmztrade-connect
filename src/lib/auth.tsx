@@ -51,12 +51,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true;
 
-    supabase.auth.getSession().then(async ({ data }) => {
+    supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
       setSession(data.session);
-      await load(data.session?.user.id);
       setLoading(false);
+      void load(data.session?.user.id);
     });
+
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
       if (!active) return;

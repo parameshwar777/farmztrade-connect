@@ -34,7 +34,7 @@ function Splash() {
   const [stage, setStage] = useState<"bts" | "brand">("bts");
 
   useEffect(() => {
-    const toBrand = window.setTimeout(() => setStage("brand"), 1900);
+    const toBrand = window.setTimeout(() => setStage("brand"), 550);
     return () => window.clearTimeout(toBrand);
   }, []);
 
@@ -43,9 +43,10 @@ function Splash() {
     const seen = window.localStorage.getItem(ONBOARD_KEY) === "1";
     const timer = window.setTimeout(() => {
       navigate({ to: seen ? "/home" : "/onboarding", replace: true });
-    }, 2100);
+    }, 650);
     return () => window.clearTimeout(timer);
   }, [stage, navigate]);
+
 
   return (
     <AnimatePresence mode="wait">
@@ -117,7 +118,7 @@ function Splash() {
               <motion.div
                 initial={{ x: "-100%" }}
                 animate={{ x: "0%" }}
-                transition={{ duration: 1.6, ease: "easeInOut" }}
+                transition={{ duration: 0.6, ease: "easeInOut" }}
                 className="h-full w-full rounded-full bg-primary"
               />
             </div>
