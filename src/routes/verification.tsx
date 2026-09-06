@@ -7,10 +7,12 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/app-shell";
 import { RequireAuth } from "@/components/auth-gate";
+import { ID_DOC_TYPES } from "@/components/admin/shared";
 import { ImageUploader } from "@/components/image-uploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -43,6 +45,7 @@ function Verification() {
   const [busy, setBusy] = useState(false);
   const [farmPhotos, setFarmPhotos] = useState<string[]>([]);
   const [idDoc, setIdDoc] = useState<string | null>(null);
+  const [idDocType, setIdDocType] = useState<string>("aadhaar");
   const [form, setForm] = useState({ farm_name: "", farm_details: "", experience: "" });
 
   const existing = useQuery({
@@ -82,7 +85,8 @@ function Verification() {
     if (!user) return undefined;
     if (form.farm_name.trim().length < 3) return void toast.error("Enter your farm or business name.");
     if (form.farm_details.trim().length < 20) return void toast.error("Tell us a little more about your farm.");
-    if (!idDoc) return void toast.error("Upload an ID proof photo.");
+    if (!idDocType) return void toast.error("Choose which government ID you are uploading.");
+    if (!idDoc) return void toast.error("Upload a photo of your government ID.");
     if (farmPhotos.length < 1) return void toast.error("Add at least one farm photo.");
 
     setBusy(true);
@@ -92,6 +96,7 @@ function Verification() {
       farm_details: form.farm_details.trim(),
       experience: form.experience.trim() || null,
       id_doc_path: idDoc,
+      id_doc_type: idDocType,
       farm_photo_paths: farmPhotos,
       status: "pending",
     });
