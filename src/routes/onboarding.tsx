@@ -31,7 +31,7 @@ function Onboarding() {
   const { t, lang, setLang } = useI18n();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const slide = slides[step];
+  const slide = slides[step] ?? slides[0]!;
   const Icon = slide.icon;
 
   function finish() {

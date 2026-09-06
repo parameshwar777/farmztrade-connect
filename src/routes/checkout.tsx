@@ -75,7 +75,7 @@ function Checkout() {
   const total = subtotal + delivery;
 
   async function placeOrder() {
-    if (!user) return;
+    if (!user) return undefined;
     if (form.contact_name.trim().length < 3) return toast.error("Enter the name for delivery.");
     if (!isValidIndianMobile(form.contact_phone)) return toast.error("Enter a valid 10-digit mobile number.");
     if (form.address_line.trim().length < 10) return toast.error("Enter the full delivery address.");
@@ -100,7 +100,7 @@ function Checkout() {
         total,
         payment_provider: "cod",
         payment_status: "pending",
-        status: "placed",
+        status: "payment_pending",
       })
       .select()
       .single();

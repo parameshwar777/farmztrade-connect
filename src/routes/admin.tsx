@@ -232,13 +232,13 @@ function AdminPanel() {
           ) : listings.data?.length ? (
             <motion.ul variants={staggerList} initial="hidden" animate="show" className="space-y-3">
               {listings.data.map((l) => {
-                const images = (l.animal_images ?? []) as { id: string; path: string }[];
+                const images = (l.animal_images ?? []) as { id: string; url: string }[];
                 const seller = l.seller as { full_name?: string; phone?: string } | null;
                 return (
                   <motion.li key={l.id} variants={fadeUp} className="rounded-3xl bg-card p-4 card-shadow">
                     <div className="flex gap-3">
                       <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl">
-                        <SafeImage path={images[0]?.path} alt={l.title} className="h-full w-full" />
+                        <SafeImage path={images[0]?.url} alt={l.title} className="h-full w-full" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-display font-bold">{l.title}</p>

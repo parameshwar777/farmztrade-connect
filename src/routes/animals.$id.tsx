@@ -248,7 +248,7 @@ function AnimalDetail() {
               {l.seller?.created_at ? new Date(l.seller.created_at).getFullYear() : "—"}
             </p>
           </div>
-          {l.seller?.verification === "verified" && <VerifiedBadge compact />}
+          {l.seller?.verification === "approved" && <VerifiedBadge compact />}
         </div>
 
         <Separator className="my-4" />
