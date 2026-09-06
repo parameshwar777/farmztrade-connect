@@ -64,7 +64,7 @@ function Verification() {
 
   async function uploadIdDoc(file: File) {
     const problem = validateImage(file);
-    if (problem) return toast.error(problem);
+    if (problem) return void toast.error(problem);
     setBusy(true);
     try {
       const path = await uploadFile("verification-docs", user!.id, file);
@@ -75,14 +75,15 @@ function Verification() {
     } finally {
       setBusy(false);
     }
+    return undefined;
   }
 
   async function submit() {
-    if (!user) return;
-    if (form.farm_name.trim().length < 3) return toast.error("Enter your farm or business name.");
-    if (form.farm_details.trim().length < 20) return toast.error("Tell us a little more about your farm.");
-    if (!idDoc) return toast.error("Upload an ID proof photo.");
-    if (farmPhotos.length < 1) return toast.error("Add at least one farm photo.");
+    if (!user) return undefined;
+    if (form.farm_name.trim().length < 3) return void toast.error("Enter your farm or business name.");
+    if (form.farm_details.trim().length < 20) return void toast.error("Tell us a little more about your farm.");
+    if (!idDoc) return void toast.error("Upload an ID proof photo.");
+    if (farmPhotos.length < 1) return void toast.error("Add at least one farm photo.");
 
     setBusy(true);
     const { error } = await supabase.from("user_verifications").insert({
@@ -98,12 +99,13 @@ function Verification() {
 
     if (error) {
       toast.error("Could not submit. Please try again.");
-      return;
+      return undefined;
     }
     await refreshProfile();
     await existing.refetch();
     toast.success("Submitted. We will review your details soon.");
     navigate({ to: "/profile" });
+    return undefined;
   }
 
   if (status === "pending" || status === "approved" || status === "rejected") {
