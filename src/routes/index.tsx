@@ -118,7 +118,7 @@ function Splash() {
               <motion.div
                 initial={{ x: "-100%" }}
                 animate={{ x: "0%" }}
-                transition={{ duration: 1.6, ease: "easeInOut" }}
+                transition={{ duration: 0.6, ease: "easeInOut" }}
                 className="h-full w-full rounded-full bg-primary"
               />
             </div>
