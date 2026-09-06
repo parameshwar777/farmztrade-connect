@@ -67,7 +67,7 @@ export function AppShell({
             ) : null}
 
             {showBrandHeader && !title ? (
-              <Link to="/home" className="min-w-0">
+              <Link to="/home" className="min-w-0 shrink overflow-hidden">
                 <BrandLockup />
               </Link>
             ) : (
