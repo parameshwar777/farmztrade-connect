@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -7,7 +7,6 @@ import splashArt from "@/assets/splash-farm.jpg";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
-  ssr: false,
   head: () => ({
     meta: [
       { title: "FARMZTRADE — Buy & Sell Livestock in India" },
@@ -21,29 +20,34 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Trusted sellers, direct chat, fair offers and quality feed — all in one app.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [
+      { rel: "preload", href: btsLogo.url, as: "image" },
+      { rel: "preload", href: splashArt, as: "image" },
     ],
   }),
   component: Splash,
 });
 
-const ONBOARD_KEY = "farmztrade.onboarded";
-
 function Splash() {
   const navigate = useNavigate();
+  const router = useRouter();
   const { t } = useI18n();
   const [stage, setStage] = useState<"bts" | "brand">("bts");
 
   useEffect(() => {
-    const toBrand = window.setTimeout(() => setStage("brand"), 550);
+    void router.preloadRoute({ to: "/home" });
+    const toBrand = window.setTimeout(() => setStage("brand"), 2_000);
     return () => window.clearTimeout(toBrand);
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (stage !== "brand") return;
-    const seen = window.localStorage.getItem(ONBOARD_KEY) === "1";
     const timer = window.setTimeout(() => {
-      navigate({ to: seen ? "/home" : "/onboarding", replace: true });
-    }, 650);
+      navigate({ to: "/home", replace: true });
+    }, 3_000);
     return () => window.clearTimeout(timer);
   }, [stage, navigate]);
 
@@ -54,7 +58,7 @@ function Splash() {
         <motion.div
           key="bts"
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.45 }}
+          transition={{ duration: 0.15 }}
           className="grid min-h-screen place-items-center bg-background px-8 text-center safe-top safe-bottom"
         >
           <div>
@@ -64,15 +68,12 @@ function Splash() {
               width={1260}
               height={1260}
               loading="eager"
-              initial={{ scale: 0.82, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 160, damping: 18 }}
               className="mx-auto h-56 w-56 object-contain"
             />
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45 }}
+              transition={{ duration: 0.2 }}
               className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground"
             >
               A BTS Farms initiative
