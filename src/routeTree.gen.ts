@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as FeedCartRouteImport } from './routes/feed-cart'
 import { Route as HomeRouteImport } from './routes/home'
@@ -18,6 +19,7 @@ import { Route as InterestedRouteImport } from './routes/interested'
 import { Route as MyListingsRouteImport } from './routes/my-listings'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ProfileSetupRouteImport } from './routes/profile-setup'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SellRouteImport } from './routes/sell'
@@ -35,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -70,6 +77,11 @@ const OffersRoute = OffersRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileSetupRoute = ProfileSetupRouteImport.update({
@@ -116,6 +128,7 @@ const FeedIdRoute = FeedIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/favorites': typeof FavoritesRoute
   '/feed-cart': typeof FeedCartRoute
   '/home': typeof HomeRoute
@@ -123,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/my-listings': typeof MyListingsRoute
   '/offers': typeof OffersRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
@@ -135,6 +149,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/favorites': typeof FavoritesRoute
   '/feed-cart': typeof FeedCartRoute
   '/home': typeof HomeRoute
@@ -142,6 +157,7 @@ export interface FileRoutesByTo {
   '/my-listings': typeof MyListingsRoute
   '/offers': typeof OffersRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
@@ -155,6 +171,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/favorites': typeof FavoritesRoute
   '/feed-cart': typeof FeedCartRoute
   '/home': typeof HomeRoute
@@ -162,6 +179,7 @@ export interface FileRoutesById {
   '/my-listings': typeof MyListingsRoute
   '/offers': typeof OffersRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
@@ -176,6 +194,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/checkout'
     | '/favorites'
     | '/feed-cart'
     | '/home'
@@ -183,6 +202,7 @@ export interface FileRouteTypes {
     | '/my-listings'
     | '/offers'
     | '/onboarding'
+    | '/orders'
     | '/profile-setup'
     | '/search'
     | '/sell'
@@ -195,6 +215,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/checkout'
     | '/favorites'
     | '/feed-cart'
     | '/home'
@@ -202,6 +223,7 @@ export interface FileRouteTypes {
     | '/my-listings'
     | '/offers'
     | '/onboarding'
+    | '/orders'
     | '/profile-setup'
     | '/search'
     | '/sell'
@@ -214,6 +236,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
+    | '/checkout'
     | '/favorites'
     | '/feed-cart'
     | '/home'
@@ -221,6 +244,7 @@ export interface FileRouteTypes {
     | '/my-listings'
     | '/offers'
     | '/onboarding'
+    | '/orders'
     | '/profile-setup'
     | '/search'
     | '/sell'
@@ -234,6 +258,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  CheckoutRoute: typeof CheckoutRoute
   FavoritesRoute: typeof FavoritesRoute
   FeedCartRoute: typeof FeedCartRoute
   HomeRoute: typeof HomeRoute
@@ -241,6 +266,7 @@ export interface RootRouteChildren {
   MyListingsRoute: typeof MyListingsRoute
   OffersRoute: typeof OffersRoute
   OnboardingRoute: typeof OnboardingRoute
+  OrdersRoute: typeof OrdersRoute
   ProfileSetupRoute: typeof ProfileSetupRoute
   SearchRoute: typeof SearchRoute
   SellRoute: typeof SellRoute
@@ -265,6 +291,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -314,6 +347,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile-setup': {
@@ -378,6 +418,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  CheckoutRoute: CheckoutRoute,
   FavoritesRoute: FavoritesRoute,
   FeedCartRoute: FeedCartRoute,
   HomeRoute: HomeRoute,
@@ -385,6 +426,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyListingsRoute: MyListingsRoute,
   OffersRoute: OffersRoute,
   OnboardingRoute: OnboardingRoute,
+  OrdersRoute: OrdersRoute,
   ProfileSetupRoute: ProfileSetupRoute,
   SearchRoute: SearchRoute,
   SellRoute: SellRoute,
