@@ -39,17 +39,17 @@ function Splash() {
 
   useEffect(() => {
     const toBrand = window.setTimeout(() => setStage("brand"), 2_000);
-    void router.preloadRoute({ to: "/home" });
     return () => window.clearTimeout(toBrand);
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (stage !== "brand") return;
+    void router.preloadRoute({ to: "/home" });
     const timer = window.setTimeout(() => {
       navigate({ to: "/home", replace: true });
     }, 3_000);
     return () => window.clearTimeout(timer);
-  }, [stage, navigate]);
+  }, [stage, navigate, router]);
 
 
   return (
