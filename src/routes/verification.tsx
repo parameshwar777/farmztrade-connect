@@ -203,10 +203,25 @@ function Verification() {
         </section>
 
         <section className="rounded-3xl bg-card p-5 card-shadow">
-          <h2 className="font-display text-base font-bold">ID proof</h2>
+          <h2 className="font-display text-base font-bold">Government ID proof</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Aadhaar, voter ID or driving licence. Kept private for verification only.
+            Aadhaar, PAN, voter ID or driving licence. Kept private for verification only.
           </p>
+          <div className="mt-3 space-y-2">
+            <Label>Which ID are you uploading?</Label>
+            <Select value={idDocType} onValueChange={setIdDocType}>
+              <SelectTrigger className="h-12 rounded-2xl">
+                <SelectValue placeholder="Choose ID type" />
+              </SelectTrigger>
+              <SelectContent>
+                {ID_DOC_TYPES.map((t) => (
+                  <SelectItem key={t.value} value={t.value}>
+                    {t.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <label className="mt-3 flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-border px-4 py-3">
             <FileText className="h-5 w-5 text-primary" />
             <span className="text-sm font-semibold">{idDoc ? "ID proof added" : "Take photo or choose file"}</span>
