@@ -91,14 +91,16 @@ export function AppShell({
               ))}
             </nav>
 
-            <div className="ml-auto flex shrink-0 items-center gap-1">
+            <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1">
               {headerRight}
-              <IconLink to="/favorites" label="Favorites">
-                <Heart className="h-5 w-5" />
-              </IconLink>
-              <IconLink to="/chats" label="Messages">
-                <MessageCircle className="h-5 w-5" />
-              </IconLink>
+              <span className="hidden sm:contents">
+                <IconLink to="/favorites" label="Favorites">
+                  <Heart className="h-5 w-5" />
+                </IconLink>
+                <IconLink to="/chats" label="Messages">
+                  <MessageCircle className="h-5 w-5" />
+                </IconLink>
+              </span>
               <IconLink to="/feed-cart" label="Feed cart">
                 <ShoppingBag className="h-5 w-5" />
               </IconLink>
