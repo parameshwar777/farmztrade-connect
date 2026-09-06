@@ -57,7 +57,7 @@ function Splash() {
           transition={{ delay: 0.25, duration: 0.5 }}
           className="mt-6"
         >
-          <BrandWordmark size="xl" invert />
+          <BrandWordmark size="lg" invert />
           <p className="mt-2 text-sm font-medium text-primary-foreground/85">{t("brand.tagline")}</p>
         </motion.div>
 

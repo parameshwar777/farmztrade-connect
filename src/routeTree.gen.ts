@@ -11,7 +11,25 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as FeedCartRouteImport } from './routes/feed-cart'
+import { Route as HomeRouteImport } from './routes/home'
+import { Route as InterestedRouteImport } from './routes/interested'
+import { Route as MyListingsRouteImport } from './routes/my-listings'
+import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as OffersRouteImport } from './routes/offers'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ProfileSetupRouteImport } from './routes/profile-setup'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as SellRouteImport } from './routes/sell'
+import { Route as AnimalsIdRouteImport } from './routes/animals.$id'
+import { Route as ChatsIndexRouteImport } from './routes/chats.index'
+import { Route as ChatsIdRouteImport } from './routes/chats.$id'
+import { Route as FeedIndexRouteImport } from './routes/feed.index'
+import { Route as FeedIdRouteImport } from './routes/feed.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,40 +41,266 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedCartRoute = FeedCartRouteImport.update({
+  id: '/feed-cart',
+  path: '/feed-cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InterestedRoute = InterestedRouteImport.update({
+  id: '/interested',
+  path: '/interested',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyListingsRoute = MyListingsRouteImport.update({
+  id: '/my-listings',
+  path: '/my-listings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OffersRoute = OffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileSetupRoute = ProfileSetupRouteImport.update({
+  id: '/profile-setup',
+  path: '/profile-setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellRoute = SellRouteImport.update({
+  id: '/sell',
+  path: '/sell',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnimalsIdRoute = AnimalsIdRouteImport.update({
+  id: '/animals/$id',
+  path: '/animals/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatsIndexRoute = ChatsIndexRouteImport.update({
+  id: '/chats/',
+  path: '/chats/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatsIdRoute = ChatsIdRouteImport.update({
+  id: '/chats/$id',
+  path: '/chats/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedIndexRoute = FeedIndexRouteImport.update({
+  id: '/feed/',
+  path: '/feed/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedIdRoute = FeedIdRouteImport.update({
+  id: '/feed/$id',
+  path: '/feed/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
+  '/favorites': typeof FavoritesRoute
+  '/feed-cart': typeof FeedCartRoute
+  '/home': typeof HomeRoute
+  '/interested': typeof InterestedRoute
+  '/my-listings': typeof MyListingsRoute
+  '/notifications': typeof NotificationsRoute
+  '/offers': typeof OffersRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
+  '/profile-setup': typeof ProfileSetupRoute
+  '/search': typeof SearchRoute
+  '/sell': typeof SellRoute
+  '/animals/$id': typeof AnimalsIdRoute
+  '/chats/$id': typeof ChatsIdRoute
+  '/feed/$id': typeof FeedIdRoute
+  '/chats/': typeof ChatsIndexRoute
+  '/feed/': typeof FeedIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
+  '/favorites': typeof FavoritesRoute
+  '/feed-cart': typeof FeedCartRoute
+  '/home': typeof HomeRoute
+  '/interested': typeof InterestedRoute
+  '/my-listings': typeof MyListingsRoute
+  '/notifications': typeof NotificationsRoute
+  '/offers': typeof OffersRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
+  '/profile-setup': typeof ProfileSetupRoute
+  '/search': typeof SearchRoute
+  '/sell': typeof SellRoute
+  '/animals/$id': typeof AnimalsIdRoute
+  '/chats/$id': typeof ChatsIdRoute
+  '/feed/$id': typeof FeedIdRoute
+  '/chats': typeof ChatsIndexRoute
+  '/feed': typeof FeedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
+  '/favorites': typeof FavoritesRoute
+  '/feed-cart': typeof FeedCartRoute
+  '/home': typeof HomeRoute
+  '/interested': typeof InterestedRoute
+  '/my-listings': typeof MyListingsRoute
+  '/notifications': typeof NotificationsRoute
+  '/offers': typeof OffersRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
+  '/profile-setup': typeof ProfileSetupRoute
+  '/search': typeof SearchRoute
+  '/sell': typeof SellRoute
+  '/animals/$id': typeof AnimalsIdRoute
+  '/chats/$id': typeof ChatsIdRoute
+  '/feed/$id': typeof FeedIdRoute
+  '/chats/': typeof ChatsIndexRoute
+  '/feed/': typeof FeedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/onboarding'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/checkout'
+    | '/favorites'
+    | '/feed-cart'
+    | '/home'
+    | '/interested'
+    | '/my-listings'
+    | '/notifications'
+    | '/offers'
+    | '/onboarding'
+    | '/orders'
+    | '/profile'
+    | '/profile-setup'
+    | '/search'
+    | '/sell'
+    | '/animals/$id'
+    | '/chats/$id'
+    | '/feed/$id'
+    | '/chats/'
+    | '/feed/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/onboarding'
-  id: '__root__' | '/' | '/auth' | '/onboarding'
+  to:
+    | '/'
+    | '/auth'
+    | '/checkout'
+    | '/favorites'
+    | '/feed-cart'
+    | '/home'
+    | '/interested'
+    | '/my-listings'
+    | '/notifications'
+    | '/offers'
+    | '/onboarding'
+    | '/orders'
+    | '/profile'
+    | '/profile-setup'
+    | '/search'
+    | '/sell'
+    | '/animals/$id'
+    | '/chats/$id'
+    | '/feed/$id'
+    | '/chats'
+    | '/feed'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/checkout'
+    | '/favorites'
+    | '/feed-cart'
+    | '/home'
+    | '/interested'
+    | '/my-listings'
+    | '/notifications'
+    | '/offers'
+    | '/onboarding'
+    | '/orders'
+    | '/profile'
+    | '/profile-setup'
+    | '/search'
+    | '/sell'
+    | '/animals/$id'
+    | '/chats/$id'
+    | '/feed/$id'
+    | '/chats/'
+    | '/feed/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  CheckoutRoute: typeof CheckoutRoute
+  FavoritesRoute: typeof FavoritesRoute
+  FeedCartRoute: typeof FeedCartRoute
+  HomeRoute: typeof HomeRoute
+  InterestedRoute: typeof InterestedRoute
+  MyListingsRoute: typeof MyListingsRoute
+  NotificationsRoute: typeof NotificationsRoute
+  OffersRoute: typeof OffersRoute
   OnboardingRoute: typeof OnboardingRoute
+  OrdersRoute: typeof OrdersRoute
+  ProfileRoute: typeof ProfileRoute
+  ProfileSetupRoute: typeof ProfileSetupRoute
+  SearchRoute: typeof SearchRoute
+  SellRoute: typeof SellRoute
+  AnimalsIdRoute: typeof AnimalsIdRoute
+  ChatsIdRoute: typeof ChatsIdRoute
+  FeedIdRoute: typeof FeedIdRoute
+  ChatsIndexRoute: typeof ChatsIndexRoute
+  FeedIndexRoute: typeof FeedIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,11 +319,137 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed-cart': {
+      id: '/feed-cart'
+      path: '/feed-cart'
+      fullPath: '/feed-cart'
+      preLoaderRoute: typeof FeedCartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/interested': {
+      id: '/interested'
+      path: '/interested'
+      fullPath: '/interested'
+      preLoaderRoute: typeof InterestedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-listings': {
+      id: '/my-listings'
+      path: '/my-listings'
+      fullPath: '/my-listings'
+      preLoaderRoute: typeof MyListingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offers': {
+      id: '/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof OffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile-setup': {
+      id: '/profile-setup'
+      path: '/profile-setup'
+      fullPath: '/profile-setup'
+      preLoaderRoute: typeof ProfileSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sell': {
+      id: '/sell'
+      path: '/sell'
+      fullPath: '/sell'
+      preLoaderRoute: typeof SellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/animals/$id': {
+      id: '/animals/$id'
+      path: '/animals/$id'
+      fullPath: '/animals/$id'
+      preLoaderRoute: typeof AnimalsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chats/': {
+      id: '/chats/'
+      path: '/chats'
+      fullPath: '/chats/'
+      preLoaderRoute: typeof ChatsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chats/$id': {
+      id: '/chats/$id'
+      path: '/chats/$id'
+      fullPath: '/chats/$id'
+      preLoaderRoute: typeof ChatsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed/': {
+      id: '/feed/'
+      path: '/feed'
+      fullPath: '/feed/'
+      preLoaderRoute: typeof FeedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed/$id': {
+      id: '/feed/$id'
+      path: '/feed/$id'
+      fullPath: '/feed/$id'
+      preLoaderRoute: typeof FeedIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -88,7 +458,25 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  CheckoutRoute: CheckoutRoute,
+  FavoritesRoute: FavoritesRoute,
+  FeedCartRoute: FeedCartRoute,
+  HomeRoute: HomeRoute,
+  InterestedRoute: InterestedRoute,
+  MyListingsRoute: MyListingsRoute,
+  NotificationsRoute: NotificationsRoute,
+  OffersRoute: OffersRoute,
   OnboardingRoute: OnboardingRoute,
+  OrdersRoute: OrdersRoute,
+  ProfileRoute: ProfileRoute,
+  ProfileSetupRoute: ProfileSetupRoute,
+  SearchRoute: SearchRoute,
+  SellRoute: SellRoute,
+  AnimalsIdRoute: AnimalsIdRoute,
+  ChatsIdRoute: ChatsIdRoute,
+  FeedIdRoute: FeedIdRoute,
+  ChatsIndexRoute: ChatsIndexRoute,
+  FeedIndexRoute: FeedIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
