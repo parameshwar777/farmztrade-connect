@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
+import type { Database, Json } from "@/integrations/supabase/types";
 
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type Category = Database["public"]["Tables"]["animal_categories"]["Row"];
@@ -239,10 +239,11 @@ export async function respondToOffer(
   action: "accepted" | "rejected" | "countered",
   counterAmount?: number,
 ) {
-  const { error } = await supabase
-    .from("offers")
-    .update({ status: action, counter_amount: action === "countered" ? counterAmount : null })
-    .eq("id", offer.id);
+  const patch: { status: typeof action; counter_amount: number | null } = {
+    status: action,
+    counter_amount: action === "countered" ? (counterAmount ?? null) : null,
+  };
+  const { error } = await supabase.from("offers").update(patch).eq("id", offer.id);
   if (error) throw error;
   await supabase.from("notifications").insert({
     user_id: offer.buyer_id,
@@ -313,9 +314,16 @@ export async function sendMessage(input: {
   body?: string;
   image_url?: string;
   kind?: string;
-  payload?: Record<string, unknown>;
+  payload?: Json;
 }) {
-  const { error } = await supabase.from("messages").insert(input);
+  const { error } = await supabase.from("messages").insert({
+    conversation_id: input.conversation_id,
+    sender_id: input.sender_id,
+    body: input.body ?? null,
+    image_url: input.image_url ?? null,
+    kind: input.kind ?? "text",
+    payload: input.payload ?? null,
+  });
   if (error) throw error;
   await supabase
     .from("conversations")
