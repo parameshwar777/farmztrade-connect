@@ -114,7 +114,7 @@ function AdminPanel() {
       .from("user_verifications")
       .update({ status: approve ? "approved" : "rejected", admin_note: approve ? null : "Details could not be confirmed." })
       .eq("id", id);
-    await supabase.from("profiles").update({ is_verified_seller: approve }).eq("id", userId);
+    await supabase.from("profiles").update({ verification: approve ? "approved" : "rejected" }).eq("id", userId);
     await supabase.from("notifications").insert({
       user_id: userId,
       type: "verification",
