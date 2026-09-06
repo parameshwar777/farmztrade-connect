@@ -66,3 +66,12 @@ export function StatusBadge({ status, className }: { status: ListingStatus | str
     </span>
   );
 }
+
+export function TrustNote({ className }: { className?: string }) {
+  return (
+    <p className={cn("rounded-2xl bg-secondary px-4 py-3 text-xs leading-relaxed text-secondary-foreground", className)}>
+      FARMZTRADE connects buyers and sellers. Always inspect an animal in person and confirm health records before
+      paying. FARMZTRADE is not a party to any sale and does not hold payments between buyers and sellers.
+    </p>
+  );
+}

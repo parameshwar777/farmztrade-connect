@@ -75,11 +75,11 @@ function Checkout() {
   const total = subtotal + delivery;
 
   async function placeOrder() {
-    if (!user) return;
-    if (form.contact_name.trim().length < 3) return toast.error("Enter the name for delivery.");
-    if (!isValidIndianMobile(form.contact_phone)) return toast.error("Enter a valid 10-digit mobile number.");
-    if (form.address_line.trim().length < 10) return toast.error("Enter the full delivery address.");
-    if (form.pincode.length !== 6) return toast.error("Enter a valid 6-digit PIN code.");
+    if (!user) return undefined;
+    if (form.contact_name.trim().length < 3) return void toast.error("Enter the name for delivery.");
+    if (!isValidIndianMobile(form.contact_phone)) return void toast.error("Enter a valid 10-digit mobile number.");
+    if (form.address_line.trim().length < 10) return void toast.error("Enter the full delivery address.");
+    if (form.pincode.length !== 6) return void toast.error("Enter a valid 6-digit PIN code.");
 
     setBusy(true);
     const orderNo = `FZ${Date.now().toString().slice(-8)}`;
@@ -100,7 +100,7 @@ function Checkout() {
         total,
         payment_provider: "cod",
         payment_status: "pending",
-        status: "placed",
+        status: "payment_pending",
       })
       .select()
       .single();
@@ -108,7 +108,7 @@ function Checkout() {
     if (error || !order) {
       setBusy(false);
       toast.error("Could not place the order. Please try again.");
-      return;
+      return undefined;
     }
 
     await supabase.from("feed_order_items").insert(
@@ -133,6 +133,7 @@ function Checkout() {
     setBusy(false);
     toast.success("Order placed. Pay on delivery.");
     navigate({ to: "/orders" });
+    return undefined;
   }
 
   if (cart.isLoading) {

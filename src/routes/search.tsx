@@ -29,8 +29,9 @@ type SearchParams = { q?: string; category?: string };
 export const Route = createFileRoute("/search")({
   ssr: false,
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
-    q: typeof search.q === "string" && search.q ? search.q : undefined,
-    category: typeof search.category === "string" && search.category ? search.category : undefined,
+    q: typeof search["q"] === "string" && search["q"] ? (search["q"] as string) : undefined,
+    category:
+      typeof search["category"] === "string" && search["category"] ? (search["category"] as string) : undefined,
   }),
   head: () => ({
     meta: [

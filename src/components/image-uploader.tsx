@@ -59,6 +59,7 @@ export function ImageUploader({
     if (to < 0 || to >= paths.length) return;
     const copy = [...paths];
     const [item] = copy.splice(from, 1);
+    if (item === undefined) return;
     copy.splice(to, 0, item);
     onChange(copy);
   }

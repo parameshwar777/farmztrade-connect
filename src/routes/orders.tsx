@@ -33,8 +33,9 @@ export const Route = createFileRoute("/orders")({
 });
 
 const STATUS_STYLE: Record<string, string> = {
-  placed: "bg-gold/25 text-gold-foreground",
-  packed: "bg-secondary text-secondary-foreground",
+  payment_pending: "bg-gold/25 text-gold-foreground",
+  confirmed: "bg-secondary text-secondary-foreground",
+  processing: "bg-secondary text-secondary-foreground",
   shipped: "bg-primary-soft text-primary-deep",
   delivered: "bg-primary-soft text-primary-deep",
   cancelled: "bg-destructive/15 text-destructive",
@@ -70,7 +71,7 @@ function Orders() {
                     STATUS_STYLE[o.status] ?? "bg-secondary",
                   )}
                 >
-                  {o.status}
+                  {o.status.replace("_", " ")}
                 </span>
               </div>
 

@@ -134,7 +134,7 @@ export function FilterSheet({
               max={300000}
               step={5000}
               value={[draft.minPrice ?? 0, draft.maxPrice ?? 300000]}
-              onValueChange={([min, max]) => {
+              onValueChange={([min = 0, max = 300000]) => {
                 set("minPrice", min || undefined);
                 set("maxPrice", max >= 300000 ? undefined : max);
               }}
@@ -152,7 +152,7 @@ export function FilterSheet({
               max={120}
               step={3}
               value={[draft.minAge ?? 0, draft.maxAge ?? 120]}
-              onValueChange={([min, max]) => {
+              onValueChange={([min = 0, max = 120]) => {
                 set("minAge", min || undefined);
                 set("maxAge", max >= 120 ? undefined : max);
               }}
@@ -170,7 +170,7 @@ export function FilterSheet({
               max={800}
               step={10}
               value={[draft.minWeight ?? 0, draft.maxWeight ?? 800]}
-              onValueChange={([min, max]) => {
+              onValueChange={([min = 0, max = 800]) => {
                 set("minWeight", min || undefined);
                 set("maxWeight", max >= 800 ? undefined : max);
               }}

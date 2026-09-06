@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as FavoritesRouteImport } from './routes/favorites'
@@ -25,6 +26,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProfileSetupRouteImport } from './routes/profile-setup'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SellRouteImport } from './routes/sell'
+import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AnimalsIdRouteImport } from './routes/animals.$id'
 import { Route as ChatsIndexRouteImport } from './routes/chats.index'
 import { Route as ChatsIdRouteImport } from './routes/chats.$id'
@@ -34,6 +36,11 @@ import { Route as FeedIdRouteImport } from './routes/feed.$id'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -111,6 +118,11 @@ const SellRoute = SellRouteImport.update({
   path: '/sell',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerificationRoute = VerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnimalsIdRoute = AnimalsIdRouteImport.update({
   id: '/animals/$id',
   path: '/animals/$id',
@@ -139,6 +151,7 @@ const FeedIdRoute = FeedIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/favorites': typeof FavoritesRoute
@@ -154,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
+  '/verification': typeof VerificationRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/chats/$id': typeof ChatsIdRoute
   '/feed/$id': typeof FeedIdRoute
@@ -162,6 +176,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/favorites': typeof FavoritesRoute
@@ -177,6 +192,7 @@ export interface FileRoutesByTo {
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
+  '/verification': typeof VerificationRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/chats/$id': typeof ChatsIdRoute
   '/feed/$id': typeof FeedIdRoute
@@ -186,6 +202,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/favorites': typeof FavoritesRoute
@@ -201,6 +218,7 @@ export interface FileRoutesById {
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
+  '/verification': typeof VerificationRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/chats/$id': typeof ChatsIdRoute
   '/feed/$id': typeof FeedIdRoute
@@ -211,6 +229,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/auth'
     | '/checkout'
     | '/favorites'
@@ -226,6 +245,7 @@ export interface FileRouteTypes {
     | '/profile-setup'
     | '/search'
     | '/sell'
+    | '/verification'
     | '/animals/$id'
     | '/chats/$id'
     | '/feed/$id'
@@ -234,6 +254,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/auth'
     | '/checkout'
     | '/favorites'
@@ -249,6 +270,7 @@ export interface FileRouteTypes {
     | '/profile-setup'
     | '/search'
     | '/sell'
+    | '/verification'
     | '/animals/$id'
     | '/chats/$id'
     | '/feed/$id'
@@ -257,6 +279,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/auth'
     | '/checkout'
     | '/favorites'
@@ -272,6 +295,7 @@ export interface FileRouteTypes {
     | '/profile-setup'
     | '/search'
     | '/sell'
+    | '/verification'
     | '/animals/$id'
     | '/chats/$id'
     | '/feed/$id'
@@ -281,6 +305,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
   FavoritesRoute: typeof FavoritesRoute
@@ -296,6 +321,7 @@ export interface RootRouteChildren {
   ProfileSetupRoute: typeof ProfileSetupRoute
   SearchRoute: typeof SearchRoute
   SellRoute: typeof SellRoute
+  VerificationRoute: typeof VerificationRoute
   AnimalsIdRoute: typeof AnimalsIdRoute
   ChatsIdRoute: typeof ChatsIdRoute
   FeedIdRoute: typeof FeedIdRoute
@@ -310,6 +336,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -417,6 +450,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SellRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/verification': {
+      id: '/verification'
+      path: '/verification'
+      fullPath: '/verification'
+      preLoaderRoute: typeof VerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/animals/$id': {
       id: '/animals/$id'
       path: '/animals/$id'
@@ -457,6 +497,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
   FavoritesRoute: FavoritesRoute,
@@ -472,6 +513,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileSetupRoute: ProfileSetupRoute,
   SearchRoute: SearchRoute,
   SellRoute: SellRoute,
+  VerificationRoute: VerificationRoute,
   AnimalsIdRoute: AnimalsIdRoute,
   ChatsIdRoute: ChatsIdRoute,
   FeedIdRoute: FeedIdRoute,
