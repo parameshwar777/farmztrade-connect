@@ -871,6 +871,7 @@ export type Database = {
           farm_photo_paths: string[]
           id: string
           id_doc_path: string | null
+          id_doc_type: string | null
           status: Database["public"]["Enums"]["verification_status"]
           updated_at: string
           user_id: string
@@ -885,6 +886,7 @@ export type Database = {
           farm_photo_paths?: string[]
           id?: string
           id_doc_path?: string | null
+          id_doc_type?: string | null
           status?: Database["public"]["Enums"]["verification_status"]
           updated_at?: string
           user_id: string
@@ -899,6 +901,7 @@ export type Database = {
           farm_photo_paths?: string[]
           id?: string
           id_doc_path?: string | null
+          id_doc_type?: string | null
           status?: Database["public"]["Enums"]["verification_status"]
           updated_at?: string
           user_id?: string

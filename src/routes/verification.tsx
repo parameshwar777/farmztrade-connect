@@ -7,10 +7,12 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/app-shell";
 import { RequireAuth } from "@/components/auth-gate";
+import { ID_DOC_TYPES } from "@/components/admin/shared";
 import { ImageUploader } from "@/components/image-uploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -43,6 +45,7 @@ function Verification() {
   const [busy, setBusy] = useState(false);
   const [farmPhotos, setFarmPhotos] = useState<string[]>([]);
   const [idDoc, setIdDoc] = useState<string | null>(null);
+  const [idDocType, setIdDocType] = useState<string>("aadhaar");
   const [form, setForm] = useState({ farm_name: "", farm_details: "", experience: "" });
 
   const existing = useQuery({
@@ -82,7 +85,8 @@ function Verification() {
     if (!user) return undefined;
     if (form.farm_name.trim().length < 3) return void toast.error("Enter your farm or business name.");
     if (form.farm_details.trim().length < 20) return void toast.error("Tell us a little more about your farm.");
-    if (!idDoc) return void toast.error("Upload an ID proof photo.");
+    if (!idDocType) return void toast.error("Choose which government ID you are uploading.");
+    if (!idDoc) return void toast.error("Upload a photo of your government ID.");
     if (farmPhotos.length < 1) return void toast.error("Add at least one farm photo.");
 
     setBusy(true);
@@ -92,6 +96,7 @@ function Verification() {
       farm_details: form.farm_details.trim(),
       experience: form.experience.trim() || null,
       id_doc_path: idDoc,
+      id_doc_type: idDocType,
       farm_photo_paths: farmPhotos,
       status: "pending",
     });
@@ -203,10 +208,25 @@ function Verification() {
         </section>
 
         <section className="rounded-3xl bg-card p-5 card-shadow">
-          <h2 className="font-display text-base font-bold">ID proof</h2>
+          <h2 className="font-display text-base font-bold">Government ID proof</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Aadhaar, voter ID or driving licence. Kept private for verification only.
+            Aadhaar, PAN, voter ID or driving licence. Kept private for verification only.
           </p>
+          <div className="mt-3 space-y-2">
+            <Label>Which ID are you uploading?</Label>
+            <Select value={idDocType} onValueChange={setIdDocType}>
+              <SelectTrigger className="h-12 rounded-2xl">
+                <SelectValue placeholder="Choose ID type" />
+              </SelectTrigger>
+              <SelectContent>
+                {ID_DOC_TYPES.map((t) => (
+                  <SelectItem key={t.value} value={t.value}>
+                    {t.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <label className="mt-3 flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-border px-4 py-3">
             <FileText className="h-5 w-5 text-primary" />
             <span className="text-sm font-semibold">{idDoc ? "ID proof added" : "Take photo or choose file"}</span>
