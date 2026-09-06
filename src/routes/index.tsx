@@ -38,8 +38,8 @@ function Splash() {
   const [stage, setStage] = useState<"bts" | "brand">("bts");
 
   useEffect(() => {
-    void router.preloadRoute({ to: "/home" });
     const toBrand = window.setTimeout(() => setStage("brand"), 2_000);
+    void router.preloadRoute({ to: "/home" });
     return () => window.clearTimeout(toBrand);
   }, [router]);
 
