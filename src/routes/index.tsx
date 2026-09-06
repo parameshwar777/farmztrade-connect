@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 import btsLogo from "@/assets/bts-farms-logo.jpeg.asset.json";
@@ -53,12 +53,10 @@ function Splash() {
 
 
   return (
-    <AnimatePresence mode="wait">
+    <>
       {stage === "bts" ? (
         <motion.div
           key="bts"
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
           className="grid min-h-screen place-items-center bg-background px-8 text-center safe-top safe-bottom"
         >
           <div>
@@ -126,6 +124,6 @@ function Splash() {
           </div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </>
   );
 }
