@@ -17,9 +17,11 @@ import { Route as FeedCartRouteImport } from './routes/feed-cart'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as InterestedRouteImport } from './routes/interested'
 import { Route as MyListingsRouteImport } from './routes/my-listings'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProfileSetupRouteImport } from './routes/profile-setup'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SellRouteImport } from './routes/sell'
@@ -69,6 +71,11 @@ const MyListingsRoute = MyListingsRouteImport.update({
   path: '/my-listings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OffersRoute = OffersRouteImport.update({
   id: '/offers',
   path: '/offers',
@@ -82,6 +89,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileSetupRoute = ProfileSetupRouteImport.update({
@@ -134,9 +146,11 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/interested': typeof InterestedRoute
   '/my-listings': typeof MyListingsRoute
+  '/notifications': typeof NotificationsRoute
   '/offers': typeof OffersRoute
   '/onboarding': typeof OnboardingRoute
   '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
@@ -155,9 +169,11 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/interested': typeof InterestedRoute
   '/my-listings': typeof MyListingsRoute
+  '/notifications': typeof NotificationsRoute
   '/offers': typeof OffersRoute
   '/onboarding': typeof OnboardingRoute
   '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
@@ -177,9 +193,11 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/interested': typeof InterestedRoute
   '/my-listings': typeof MyListingsRoute
+  '/notifications': typeof NotificationsRoute
   '/offers': typeof OffersRoute
   '/onboarding': typeof OnboardingRoute
   '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
@@ -200,9 +218,11 @@ export interface FileRouteTypes {
     | '/home'
     | '/interested'
     | '/my-listings'
+    | '/notifications'
     | '/offers'
     | '/onboarding'
     | '/orders'
+    | '/profile'
     | '/profile-setup'
     | '/search'
     | '/sell'
@@ -221,9 +241,11 @@ export interface FileRouteTypes {
     | '/home'
     | '/interested'
     | '/my-listings'
+    | '/notifications'
     | '/offers'
     | '/onboarding'
     | '/orders'
+    | '/profile'
     | '/profile-setup'
     | '/search'
     | '/sell'
@@ -242,9 +264,11 @@ export interface FileRouteTypes {
     | '/home'
     | '/interested'
     | '/my-listings'
+    | '/notifications'
     | '/offers'
     | '/onboarding'
     | '/orders'
+    | '/profile'
     | '/profile-setup'
     | '/search'
     | '/sell'
@@ -264,9 +288,11 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   InterestedRoute: typeof InterestedRoute
   MyListingsRoute: typeof MyListingsRoute
+  NotificationsRoute: typeof NotificationsRoute
   OffersRoute: typeof OffersRoute
   OnboardingRoute: typeof OnboardingRoute
   OrdersRoute: typeof OrdersRoute
+  ProfileRoute: typeof ProfileRoute
   ProfileSetupRoute: typeof ProfileSetupRoute
   SearchRoute: typeof SearchRoute
   SellRoute: typeof SellRoute
@@ -335,6 +361,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyListingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/offers': {
       id: '/offers'
       path: '/offers'
@@ -354,6 +387,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile-setup': {
@@ -424,9 +464,11 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   InterestedRoute: InterestedRoute,
   MyListingsRoute: MyListingsRoute,
+  NotificationsRoute: NotificationsRoute,
   OffersRoute: OffersRoute,
   OnboardingRoute: OnboardingRoute,
   OrdersRoute: OrdersRoute,
+  ProfileRoute: ProfileRoute,
   ProfileSetupRoute: ProfileSetupRoute,
   SearchRoute: SearchRoute,
   SellRoute: SellRoute,
