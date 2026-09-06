@@ -22,7 +22,12 @@ export function ListingsPanel({ adminId }: { adminId: string }) {
   const listings = useQuery({
     queryKey: ["admin-listings", view],
     queryFn: async () => {
-      const statuses = view === "pending" ? ["pending"] : view === "live" ? ["approved", "sold"] : ["suspended", "rejected"];
+      const statuses =
+        view === "pending"
+          ? (["pending"] as const)
+          : view === "live"
+            ? (["approved", "sold"] as const)
+            : (["suspended", "rejected"] as const);
       const { data, error } = await supabase
         .from("animal_listings")
         .select("*, animal_images(url), seller:seller_id(full_name, phone)")
