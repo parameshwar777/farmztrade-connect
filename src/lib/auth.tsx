@@ -112,10 +112,44 @@ export function useAuth() {
 
 /* ---------- OTP helpers ---------- */
 
+/**
+ * TESTING BYPASS: while true, no real SMS is sent and the OTP is always 123456.
+ * Set to false to switch back to real phone OTP.
+ */
+export const OTP_TEST_MODE = true;
+export const TEST_OTP = "123456";
+
+function testCredentials(phone: string) {
+  const digits = phone.replace(/\D/g, "").slice(-10);
+  return {
+    email: `p${digits}@farmztrade.test`,
+    password: `Farmztrade!${digits}`,
+  };
+}
+
 export async function sendOtp(phone: string) {
+  if (OTP_TEST_MODE) return { data: null, error: null };
   return supabase.auth.signInWithOtp({ phone, options: { channel: "sms" } });
 }
 
 export async function verifyOtp(phone: string, token: string) {
+  if (OTP_TEST_MODE) {
+    if (token !== TEST_OTP) throw new Error("Invalid code");
+    const { email, password } = testCredentials(phone);
+    const signIn = await supabase.auth.signInWithPassword({ email, password });
+    if (!signIn.error) return signIn;
+    const signUp = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: "", phone } },
+    });
+    if (signUp.error) throw signUp.error;
+    if (!signUp.data.session) {
+      const retry = await supabase.auth.signInWithPassword({ email, password });
+      if (retry.error) throw retry.error;
+      return retry;
+    }
+    return signUp;
+  }
   return supabase.auth.verifyOtp({ phone, token, type: "sms" });
 }
