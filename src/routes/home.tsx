@@ -146,32 +146,6 @@ function Home() {
         <QuickAction to="/feed" icon={Wheat} label={t("home.shop")} />
       </div>
 
-      <Section title={t("home.categories")}>
-        {categories.isLoading ? (
-          <CardGridSkeleton count={4} className="grid-cols-2 sm:grid-cols-4" />
-        ) : (
-          <motion.div
-            variants={staggerList}
-            initial="hidden"
-            animate="show"
-            className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
-          >
-            {(categories.data ?? []).map((c) => (
-              <CategoryCard key={c.slug} category={c} />
-            ))}
-          </motion.div>
-        )}
-      </Section>
-
-      <Section title={t("home.featured")} action={{ to: "/search", label: t("common.viewAll") }}>
-        <ListingRow
-          listings={featured.data}
-          loading={featured.isLoading}
-          favIds={favIds}
-          onToggleFavorite={onToggleFavorite}
-        />
-      </Section>
-
       {Boolean(profile?.district) && (nearby.data?.length ?? 0) > 0 && (
         <Section title={`${t("home.popular")} — ${profile?.district}`}>
           <ListingRow
@@ -183,14 +157,25 @@ function Home() {
         </Section>
       )}
 
-      <Section title={t("home.recent")} action={{ to: "/search", label: t("common.viewAll") }}>
-        <ListingRow
-          listings={recent.data}
-          loading={recent.isLoading}
-          favIds={favIds}
-          onToggleFavorite={onToggleFavorite}
-        />
+      <Section title="All animals" action={{ to: "/search", label: t("search.filters") }}>
+        {all.isLoading ? (
+          <CardGridSkeleton count={6} className="grid-cols-2 lg:grid-cols-4" />
+        ) : all.data?.length ? (
+          <motion.div
+            variants={staggerList}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-2 gap-3 lg:grid-cols-4"
+          >
+            {all.data.map((l) => (
+              <AnimalCard key={l.id} listing={l} favorite={favIds.has(l.id)} onToggleFavorite={onToggleFavorite} />
+            ))}
+          </motion.div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No animals listed yet.</p>
+        )}
       </Section>
+
 
       <Section title={t("home.sellers")}>
         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
