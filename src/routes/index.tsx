@@ -2,9 +2,11 @@ import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router"
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import btsLogo from "@/assets/farmztrade-logo.png";
+import btsSplashAsset from "@/assets/bts-farms-splash.png.asset.json";
 import splashArt from "@/assets/splash-farm.jpg";
 import { useI18n } from "@/lib/i18n";
+
+const btsSplash = btsSplashAsset.url;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,7 +26,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: "preload", href: btsLogo, as: "image" },
+      { rel: "preload", href: btsSplash, as: "image" },
       { rel: "preload", href: splashArt, as: "image" },
     ],
   }),
@@ -57,26 +59,19 @@ function Splash() {
       {stage === "bts" ? (
         <motion.div
           key="bts"
-          className="grid min-h-screen place-items-center bg-background px-8 text-center safe-top safe-bottom"
+          className="h-screen w-full overflow-hidden bg-background"
         >
-          <div>
-            <motion.img
-              src={btsLogo}
-              alt="BTS Farms"
-              width={1260}
-              height={1260}
-              loading="eager"
-              className="mx-auto h-56 w-56 object-contain"
-            />
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground"
-            >
-              A BTS Farms initiative
-            </motion.p>
-          </div>
+          <motion.img
+            src={btsSplash}
+            alt="BTS Farms — Better Care. Better Growth. Better Tomorrow."
+            width={394}
+            height={717}
+            loading="eager"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.25 }}
+            className="h-full w-full object-cover"
+          />
         </motion.div>
       ) : (
         <motion.div
