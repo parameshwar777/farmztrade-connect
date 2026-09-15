@@ -514,6 +514,9 @@ export type Database = {
           name: string
           price: number
           rating: number
+          reject_reason: string | null
+          seller_id: string | null
+          status: string
           stock: number
           suitable_for: string | null
           updated_at: string
@@ -533,6 +536,9 @@ export type Database = {
           name: string
           price: number
           rating?: number
+          reject_reason?: string | null
+          seller_id?: string | null
+          status?: string
           stock?: number
           suitable_for?: string | null
           updated_at?: string
@@ -552,6 +558,9 @@ export type Database = {
           name?: string
           price?: number
           rating?: number
+          reject_reason?: string | null
+          seller_id?: string | null
+          status?: string
           stock?: number
           suitable_for?: string | null
           updated_at?: string

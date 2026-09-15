@@ -340,7 +340,7 @@ export async function fetchFeedCategories(): Promise<FeedCategory[]> {
 }
 
 export async function fetchFeedProducts(category?: string, q?: string): Promise<FeedProduct[]> {
-  let query = supabase.from("feed_products").select("*").eq("active", true);
+  let query = supabase.from("feed_products").select("*").eq("active", true).eq("status", "approved");
   if (category) query = query.eq("category_slug", category);
   if (q) query = query.or(`name.ilike.%${q}%,brand.ilike.%${q}%`);
   const { data, error } = await query.order("created_at", { ascending: false });
@@ -353,6 +353,54 @@ export async function fetchFeedProduct(id: string): Promise<FeedProduct | null> 
   if (error) throw error;
   return data;
 }
+
+/** Feed products this user has listed, whatever their review status. */
+export async function fetchMyFeedProducts(userId: string): Promise<FeedProduct[]> {
+  const { data, error } = await supabase
+    .from("feed_products")
+    .select("*")
+    .eq("seller_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export type FeedProductInput = {
+  name: string;
+  brand: string | null;
+  category_slug: string;
+  animal_type: string | null;
+  weight_label: string | null;
+  mrp: number | null;
+  price: number;
+  stock: number;
+  description: string | null;
+  ingredients: string | null;
+  suitable_for: string | null;
+  image_url: string | null;
+};
+
+/** Seller-submitted feed products wait for admin approval before going live. */
+export async function createFeedProduct(sellerId: string, input: FeedProductInput) {
+  const { data, error } = await supabase
+    .from("feed_products")
+    .insert({ ...input, seller_id: sellerId, status: "pending", active: true })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateMyFeedProduct(id: string, patch: Partial<FeedProductInput> & { active?: boolean }) {
+  const { error } = await supabase.from("feed_products").update(patch).eq("id", id);
+  if (error) throw error;
+}
+
+export async function deleteMyFeedProduct(id: string) {
+  const { error } = await supabase.from("feed_products").delete().eq("id", id);
+  if (error) throw error;
+}
+
 
 export type FeedCartItem = { id: string; quantity: number; product: FeedProduct };
 

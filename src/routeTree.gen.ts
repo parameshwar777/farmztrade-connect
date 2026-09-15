@@ -26,6 +26,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProfileSetupRouteImport } from './routes/profile-setup'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SellRouteImport } from './routes/sell'
+import { Route as SellFeedRouteImport } from './routes/sell-feed'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AnimalsIdRouteImport } from './routes/animals.$id'
 import { Route as ChatsIndexRouteImport } from './routes/chats.index'
@@ -118,6 +119,11 @@ const SellRoute = SellRouteImport.update({
   path: '/sell',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SellFeedRoute = SellFeedRouteImport.update({
+  id: '/sell-feed',
+  path: '/sell-feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VerificationRoute = VerificationRouteImport.update({
   id: '/verification',
   path: '/verification',
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
+  '/sell-feed': typeof SellFeedRoute
   '/verification': typeof VerificationRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/chats/$id': typeof ChatsIdRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
+  '/sell-feed': typeof SellFeedRoute
   '/verification': typeof VerificationRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/chats/$id': typeof ChatsIdRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/profile-setup': typeof ProfileSetupRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
+  '/sell-feed': typeof SellFeedRoute
   '/verification': typeof VerificationRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/chats/$id': typeof ChatsIdRoute
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/profile-setup'
     | '/search'
     | '/sell'
+    | '/sell-feed'
     | '/verification'
     | '/animals/$id'
     | '/chats/$id'
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/profile-setup'
     | '/search'
     | '/sell'
+    | '/sell-feed'
     | '/verification'
     | '/animals/$id'
     | '/chats/$id'
@@ -295,6 +306,7 @@ export interface FileRouteTypes {
     | '/profile-setup'
     | '/search'
     | '/sell'
+    | '/sell-feed'
     | '/verification'
     | '/animals/$id'
     | '/chats/$id'
@@ -321,6 +333,7 @@ export interface RootRouteChildren {
   ProfileSetupRoute: typeof ProfileSetupRoute
   SearchRoute: typeof SearchRoute
   SellRoute: typeof SellRoute
+  SellFeedRoute: typeof SellFeedRoute
   VerificationRoute: typeof VerificationRoute
   AnimalsIdRoute: typeof AnimalsIdRoute
   ChatsIdRoute: typeof ChatsIdRoute
@@ -450,6 +463,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SellRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sell-feed': {
+      id: '/sell-feed'
+      path: '/sell-feed'
+      fullPath: '/sell-feed'
+      preLoaderRoute: typeof SellFeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verification': {
       id: '/verification'
       path: '/verification'
@@ -513,6 +533,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileSetupRoute: ProfileSetupRoute,
   SearchRoute: SearchRoute,
   SellRoute: SellRoute,
+  SellFeedRoute: SellFeedRoute,
   VerificationRoute: VerificationRoute,
   AnimalsIdRoute: AnimalsIdRoute,
   ChatsIdRoute: ChatsIdRoute,

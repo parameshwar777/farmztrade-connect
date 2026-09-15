@@ -9,7 +9,7 @@ import { AnimalCard } from "@/components/animal-card";
 import { AppShell, TrustNote } from "@/components/app-shell";
 import { SignInPrompt, useAuthAction } from "@/components/auth-gate";
 import { VerifiedBadge } from "@/components/badges";
-import { CategoryCard } from "@/components/category-card";
+
 import { SafeImage } from "@/components/media";
 import { CardGridSkeleton } from "@/components/states";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,8 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import heroImage from "@/assets/farm-hero.jpg";
 import {
-  fetchCategories,
   fetchFavoriteIds,
+
   fetchListings,
   fetchVerifiedSellers,
   toggleFavorite,
@@ -56,17 +56,12 @@ function Home() {
   const { guard, prompt, setPrompt } = useAuthAction();
   const [query, setQuery] = useState("");
 
-  const categories = useQuery({ queryKey: ["categories"], queryFn: fetchCategories, staleTime: 300_000 });
-  const featured = useQuery({
-    queryKey: ["listings", "featured"],
-    queryFn: () => fetchListings({ sort: "popular", limit: 6 }),
+  const all = useQuery({
+    queryKey: ["listings", "all-home"],
+    queryFn: () => fetchListings({ sort: "newest", limit: 60 }),
     staleTime: 60_000,
   });
-  const recent = useQuery({
-    queryKey: ["listings", "recent"],
-    queryFn: () => fetchListings({ sort: "newest", limit: 6 }),
-    staleTime: 60_000,
-  });
+
   const nearby = useQuery({
     queryKey: ["listings", "nearby", profile?.district],
     queryFn: () => fetchListings({ district: profile?.district ?? undefined, limit: 6 }),
@@ -104,8 +99,13 @@ function Home() {
         animate="show"
         className="relative overflow-hidden rounded-4xl card-shadow"
       >
-        <img src={heroImage} alt="Cattle grazing on an Indian farm at sunrise" className="h-56 w-full object-cover sm:h-72" />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary-deep/90 via-primary-deep/45 to-transparent" />
+        <img
+          src={heroImage}
+          alt="Cattle grazing on an Indian farm at sunrise"
+          className="h-56 w-full object-cover sunset-warm sm:h-72"
+        />
+        <div className="absolute inset-0 sunset-gradient" />
+
         <div className="absolute inset-x-0 bottom-0 p-5">
           <h1 className="max-w-md font-display text-2xl font-extrabold leading-tight text-primary-foreground sm:text-3xl">
             {t("home.hero.title")}
@@ -141,32 +141,6 @@ function Home() {
         <QuickAction to="/feed" icon={Wheat} label={t("home.shop")} />
       </div>
 
-      <Section title={t("home.categories")}>
-        {categories.isLoading ? (
-          <CardGridSkeleton count={4} className="grid-cols-2 sm:grid-cols-4" />
-        ) : (
-          <motion.div
-            variants={staggerList}
-            initial="hidden"
-            animate="show"
-            className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
-          >
-            {(categories.data ?? []).map((c) => (
-              <CategoryCard key={c.slug} category={c} />
-            ))}
-          </motion.div>
-        )}
-      </Section>
-
-      <Section title={t("home.featured")} action={{ to: "/search", label: t("common.viewAll") }}>
-        <ListingRow
-          listings={featured.data}
-          loading={featured.isLoading}
-          favIds={favIds}
-          onToggleFavorite={onToggleFavorite}
-        />
-      </Section>
-
       {Boolean(profile?.district) && (nearby.data?.length ?? 0) > 0 && (
         <Section title={`${t("home.popular")} — ${profile?.district}`}>
           <ListingRow
@@ -178,14 +152,25 @@ function Home() {
         </Section>
       )}
 
-      <Section title={t("home.recent")} action={{ to: "/search", label: t("common.viewAll") }}>
-        <ListingRow
-          listings={recent.data}
-          loading={recent.isLoading}
-          favIds={favIds}
-          onToggleFavorite={onToggleFavorite}
-        />
+      <Section title="All animals" action={{ to: "/search", label: t("search.filters") }}>
+        {all.isLoading ? (
+          <CardGridSkeleton count={6} className="grid-cols-2 lg:grid-cols-4" />
+        ) : all.data?.length ? (
+          <motion.div
+            variants={staggerList}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-2 gap-3 lg:grid-cols-4"
+          >
+            {all.data.map((l) => (
+              <AnimalCard key={l.id} listing={l} favorite={favIds.has(l.id)} onToggleFavorite={onToggleFavorite} />
+            ))}
+          </motion.div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No animals listed yet.</p>
+        )}
       </Section>
+
 
       <Section title={t("home.sellers")}>
         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">

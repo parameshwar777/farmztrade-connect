@@ -129,6 +129,14 @@
   );
   --gradient-soft: linear-gradient(180deg, oklch(0.96 0.025 140) 0%, oklch(0.99 0.006 120) 100%);
   --gradient-gold: linear-gradient(135deg, oklch(0.82 0.12 85), oklch(0.72 0.13 62));
+  --gradient-sunset: linear-gradient(
+    to top,
+    oklch(0.42 0.15 42 / 0.94) 0%,
+    oklch(0.62 0.19 48 / 0.62) 42%,
+    oklch(0.82 0.16 72 / 0.22) 72%,
+    transparent 100%
+  );
+
 
   --shadow-card: 0 1px 2px oklch(0.3 0.05 150 / 0.05), 0 8px 24px -12px oklch(0.3 0.05 150 / 0.16);
   --shadow-float: 0 10px 34px -14px oklch(0.3 0.06 150 / 0.35);
@@ -197,6 +205,15 @@
 @utility gold-gradient {
   background-image: var(--gradient-gold);
 }
+
+@utility sunset-gradient {
+  background-image: var(--gradient-sunset);
+}
+
+@utility sunset-warm {
+  filter: saturate(1.2) contrast(1.03) sepia(0.16) hue-rotate(-8deg);
+}
+
 
 @utility card-shadow {
   box-shadow: var(--shadow-card);

@@ -3,16 +3,19 @@ import { Package, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { logAdminAction } from "@/components/admin/shared";
+import { logAdminAction, notify } from "@/components/admin/shared";
 import { SafeImage } from "@/components/media";
 import { EmptyState, RowSkeleton } from "@/components/states";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+
 import { supabase } from "@/integrations/supabase/client";
 import type { FeedProduct } from "@/lib/api";
 import { formatINR } from "@/lib/format";
@@ -69,10 +72,13 @@ function toDraft(p: FeedProduct): Draft {
   };
 }
 
+type View = "pending" | "live" | "all";
+
 export function FeedManager({ adminId }: { adminId: string }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false);
+  const [view, setView] = useState<View>("pending");
 
   const categories = useQuery({
     queryKey: ["admin-feed-categories"],
@@ -84,13 +90,47 @@ export function FeedManager({ adminId }: { adminId: string }) {
   });
 
   const products = useQuery({
-    queryKey: ["admin-feed-products"],
+    queryKey: ["admin-feed-products", view],
     queryFn: async () => {
-      const { data, error } = await supabase.from("feed_products").select("*").order("name");
+      let query = supabase.from("feed_products").select("*");
+      if (view === "pending") query = query.eq("status", "pending");
+      if (view === "live") query = query.eq("status", "approved");
+      const { data, error } = await query.order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
   });
+
+  async function review(p: FeedProduct, status: "approved" | "rejected") {
+    setBusy(true);
+    const { error } = await supabase
+      .from("feed_products")
+      .update({
+        status,
+        reject_reason: status === "rejected" ? "Product did not meet our feed store guidelines." : null,
+      })
+      .eq("id", p.id);
+    setBusy(false);
+    if (error) return void toast.error("Could not update this product.");
+    if (p.seller_id) {
+      await notify(
+        p.seller_id,
+        "feed_product",
+        status === "approved" ? "Your feed product is live" : "Feed product not approved",
+        status === "approved" ? `${p.name} is now in the feed store.` : "Please review the rules and submit again.",
+        "/sell-feed",
+      );
+    }
+    await logAdminAction(adminId, `feed_product_${status}`, {
+      table: "feed_products",
+      targetId: p.id,
+      note: p.name,
+    });
+    await products.refetch();
+    toast.success(status === "approved" ? "Product approved." : "Product rejected.");
+    return undefined;
+  }
+
 
   function startNew() {
     setDraft(emptyDraft(categories.data?.[0]?.slug ?? "cattle-feed"));
@@ -131,7 +171,8 @@ export function FeedManager({ adminId }: { adminId: string }) {
     setBusy(true);
     const res = draft.id
       ? await supabase.from("feed_products").update(payload).eq("id", draft.id)
-      : await supabase.from("feed_products").insert(payload);
+      : await supabase.from("feed_products").insert({ ...payload, status: "approved" });
+
     setBusy(false);
 
     if (res.error) return void toast.error("Could not save the product.");
@@ -169,6 +210,22 @@ export function FeedManager({ adminId }: { adminId: string }) {
         <Plus className="mr-1 h-4 w-4" /> Add feed product
       </Button>
 
+      <Tabs value={view} onValueChange={(v) => setView(v as View)}>
+        <TabsList className="w-full rounded-full">
+          <TabsTrigger value="pending" className="flex-1 rounded-full">
+            Waiting
+          </TabsTrigger>
+          <TabsTrigger value="live" className="flex-1 rounded-full">
+            Live
+          </TabsTrigger>
+          <TabsTrigger value="all" className="flex-1 rounded-full">
+            All
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+
+
       {products.isLoading ? (
         <RowSkeleton count={3} />
       ) : products.data?.length ? (
@@ -180,7 +237,12 @@ export function FeedManager({ adminId }: { adminId: string }) {
                   <SafeImage path={p.image_url} alt={p.name} className="h-full w-full" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-display font-bold">{p.name}</p>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="truncate font-display font-bold">{p.name}</p>
+                    <Badge variant="secondary" className="rounded-full capitalize">
+                      {p.status}
+                    </Badge>
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     {[p.brand, p.weight_label, p.category_slug].filter(Boolean).join(" • ")}
                   </p>
@@ -192,9 +254,29 @@ export function FeedManager({ adminId }: { adminId: string }) {
                       </span>
                     ) : null}
                   </p>
-                  <p className="text-xs text-muted-foreground">Stock: {p.stock}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Stock: {p.stock} • {p.seller_id ? "Seller listing" : "Added by admin"}
+                  </p>
                 </div>
               </div>
+              {p.status !== "approved" && (
+                <div className="mt-3 flex gap-2">
+                  <Button size="sm" className="flex-1 rounded-full" disabled={busy} onClick={() => review(p, "approved")}>
+                    Approve
+                  </Button>
+                  {p.status === "pending" && (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="flex-1 rounded-full"
+                      disabled={busy}
+                      onClick={() => review(p, "rejected")}
+                    >
+                      Reject
+                    </Button>
+                  )}
+                </div>
+              )}
               <div className="mt-3 flex items-center gap-2">
                 <Button size="sm" variant="secondary" className="flex-1 rounded-full" onClick={() => startEdit(p)}>
                   <Pencil className="mr-1 h-4 w-4" /> Edit
@@ -213,6 +295,7 @@ export function FeedManager({ adminId }: { adminId: string }) {
                   <Switch checked={p.active} onCheckedChange={() => void toggleActive(p)} />
                 </div>
               </div>
+
             </li>
           ))}
         </ul>
