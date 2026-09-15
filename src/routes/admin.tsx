@@ -119,6 +119,10 @@ function AdminPanel() {
               <TabsTrigger value="feed" className="rounded-full">
                 Feed store
               </TabsTrigger>
+              <TabsTrigger value="categories" className="rounded-full">
+                Categories
+              </TabsTrigger>
+
               <TabsTrigger value="offers" className="rounded-full">
                 Offers
               </TabsTrigger>
@@ -143,6 +147,10 @@ function AdminPanel() {
           <TabsContent value="feed" className="mt-4">
             <FeedManager adminId={adminId} />
           </TabsContent>
+          <TabsContent value="categories" className="mt-4">
+            <CategoriesPanel adminId={adminId} />
+          </TabsContent>
+
           <TabsContent value="offers" className="mt-4">
             <OffersPanel />
           </TabsContent>
