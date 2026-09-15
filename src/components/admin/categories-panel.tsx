@@ -113,8 +113,9 @@ function CategoryList({ kind, adminId }: { kind: Kind; adminId: string }) {
 
     setBusy(true);
     const res = draft.id
-      ? await supabase.from(kind).update(payload).eq("id", draft.id)
+      ? await supabase.from(kind).update(payload as never).eq("id", draft.id)
       : await supabase.from(kind).insert(payload as never);
+
     setBusy(false);
 
     if (res.error) {
