@@ -3,7 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ShieldCheck } from "lucide-react";
 
+import { CategoriesPanel } from "@/components/admin/categories-panel";
 import { FeedManager } from "@/components/admin/feed-manager";
+
 import { ListingsPanel } from "@/components/admin/listings-panel";
 import { OffersPanel } from "@/components/admin/offers-panel";
 import { PeoplePanel } from "@/components/admin/people-panel";
