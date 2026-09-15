@@ -104,8 +104,13 @@ function Home() {
         animate="show"
         className="relative overflow-hidden rounded-4xl card-shadow"
       >
-        <img src={heroImage} alt="Cattle grazing on an Indian farm at sunrise" className="h-56 w-full object-cover sm:h-72" />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary-deep/90 via-primary-deep/45 to-transparent" />
+        <img
+          src={heroImage}
+          alt="Cattle grazing on an Indian farm at sunrise"
+          className="h-56 w-full object-cover sunset-warm sm:h-72"
+        />
+        <div className="absolute inset-0 sunset-gradient" />
+
         <div className="absolute inset-x-0 bottom-0 p-5">
           <h1 className="max-w-md font-display text-2xl font-extrabold leading-tight text-primary-foreground sm:text-3xl">
             {t("home.hero.title")}
