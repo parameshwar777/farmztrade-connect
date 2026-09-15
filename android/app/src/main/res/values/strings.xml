@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FARMZTRADE</string>
+    <string name="title_activity_main">FARMZTRADE</string>
+    <string name="package_name">com.farmztrade.app</string>
+    <string name="custom_url_scheme">com.farmztrade.app</string>
+</resources>

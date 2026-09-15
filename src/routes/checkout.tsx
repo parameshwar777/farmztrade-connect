@@ -18,16 +18,13 @@ import { useAuth } from "@/lib/auth";
 import { formatINR, isValidIndianMobile } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
+declare global {
+  interface Window {
+    Razorpay?: any;
+  }
+}
+
 export const Route = createFileRoute("/checkout")({
-  ssr: false,
-  head: () => ({
-    meta: [
-      { title: "Checkout — FARMZTRADE" },
-      { name: "description", content: "Confirm your delivery address and place your feed order." },
-      { property: "og:title", content: "Checkout — FARMZTRADE" },
-      { property: "og:description", content: "Fast, simple checkout for your feed order." },
-    ],
-  }),
   component: () => (
     <RequireAuth>
       <Checkout />
@@ -83,6 +80,109 @@ function Checkout() {
 
     setBusy(true);
     const orderNo = `FZ${Date.now().toString().slice(-8)}`;
+
+    if (method === "online") {
+      const razorpayKey = import.meta.env["VITE_RAZORPAY_KEY_ID"];
+      if (!razorpayKey) {
+        toast.warning("Razorpay key is not configured yet. Add VITE_RAZORPAY_KEY_ID in .env file.");
+      }
+
+      const { data: order, error } = await supabase
+        .from("feed_orders")
+        .insert({
+          user_id: user.id,
+          order_no: orderNo,
+          contact_name: form.contact_name.trim(),
+          contact_phone: `+91${form.contact_phone}`,
+          address_line: form.address_line.trim(),
+          city: form.city.trim() || null,
+          district: form.district.trim() || null,
+          state: form.state.trim() || null,
+          pincode: form.pincode,
+          subtotal,
+          delivery_fee: delivery,
+          total,
+          payment_provider: "razorpay",
+          payment_status: "pending",
+          status: "payment_pending",
+        })
+        .select()
+        .single();
+
+      if (error || !order) {
+        setBusy(false);
+        toast.error("Could not initiate online order. Please try again.");
+        return undefined;
+      }
+
+      if (typeof window !== "undefined" && window.Razorpay) {
+        const options = {
+          key: razorpayKey || "rzp_test_placeholder",
+          amount: Math.round(total * 100),
+          currency: "INR",
+          name: "FARMZTRADE",
+          description: `Feed Order ${orderNo}`,
+          image: "/favicon.png",
+          handler: async function (response: any) {
+            await supabase
+              .from("feed_orders")
+              .update({
+                payment_status: "success",
+                status: "processing",
+                payment_ref: response.razorpay_payment_id,
+              })
+              .eq("id", order.id);
+
+            await supabase.from("feed_order_items").insert(
+              items.map((i) => ({
+                order_id: order.id,
+                product_id: i.product.id,
+                name: i.product.name,
+                image_url: i.product.image_url,
+                quantity: i.quantity,
+                unit_price: Number(i.product.price),
+              })),
+            );
+
+            await supabase.from("feed_cart").delete().eq("user_id", user.id);
+
+            await supabase.from("notifications").insert({
+              user_id: user.id,
+              type: "order_placed",
+              title: `Order ${orderNo} Paid`,
+              body: `Payment of ${formatINR(total)} confirmed. Ref: ${response.razorpay_payment_id}`,
+              link: "/orders",
+            });
+
+            setBusy(false);
+            toast.success("Payment successful! Order confirmed.");
+            navigate({ to: "/orders" });
+          },
+          modal: {
+            ondismiss: function () {
+              setBusy(false);
+              toast.error("Payment cancelled.");
+            },
+          },
+          prefill: {
+            name: form.contact_name,
+            contact: `+91${form.contact_phone}`,
+          },
+          theme: {
+            color: "#136A3A",
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } else {
+        setBusy(false);
+        toast.error("Razorpay SDK failed to load. Check your internet connection.");
+      }
+      return undefined;
+    }
+
+    // Cash on Delivery Flow
     const { data: order, error } = await supabase
       .from("feed_orders")
       .insert({
@@ -100,7 +200,7 @@ function Checkout() {
         total,
         payment_provider: "cod",
         payment_status: "pending",
-        status: "payment_pending",
+        status: "confirmed",
       })
       .select()
       .single();
@@ -236,12 +336,12 @@ function Checkout() {
         </section>
 
         <section className="rounded-3xl bg-card p-5 card-shadow">
-          <h2 className="font-display text-base font-bold">Payment</h2>
+          <h2 className="font-display text-base font-bold">Payment Method</h2>
           <div className="mt-3 space-y-2">
             <button
               onClick={() => setMethod("cod")}
               className={cn(
-                "flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left",
+                "flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-all",
                 method === "cod" ? "border-primary bg-primary-soft" : "border-border",
               )}
             >
@@ -252,20 +352,17 @@ function Checkout() {
               </span>
             </button>
             <button
-              onClick={() => {
-                setMethod("online");
-                toast.info("Online payments need a payment account connected first.");
-              }}
+              onClick={() => setMethod("online")}
               className={cn(
-                "flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left opacity-70",
-                method === "online" ? "border-primary" : "border-border",
+                "flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-all",
+                method === "online" ? "border-primary bg-primary-soft" : "border-border",
               )}
             >
-              <CreditCard className="h-5 w-5 text-muted-foreground" />
+              <CreditCard className="h-5 w-5 text-primary" />
               <span>
-                <span className="block text-sm font-semibold">Pay online (UPI / card)</span>
+                <span className="block text-sm font-semibold">Pay online (UPI / Cards / NetBanking)</span>
                 <span className="block text-xs text-muted-foreground">
-                  Not active yet — a payment account must be connected before real money can be taken.
+                  Instant & secure payment powered by Razorpay
                 </span>
               </span>
             </button>
@@ -302,17 +399,12 @@ function Checkout() {
 
         <Button
           onClick={placeOrder}
-          disabled={busy || method === "online"}
-          className="h-13 w-full rounded-full text-base"
+          disabled={busy}
+          className="h-13 w-full rounded-full text-base font-bold"
         >
           <Lock className="mr-1.5 h-4 w-4" />
-          {busy ? "Placing order…" : `Place order • ${formatINR(total)}`}
+          {busy ? "Processing order…" : method === "online" ? `Pay via Razorpay • ${formatINR(total)}` : `Place COD order • ${formatINR(total)}`}
         </Button>
-        {method === "online" && (
-          <p className="text-center text-xs text-muted-foreground">
-            Choose cash on delivery to place this order now, or ask us to connect online payments.
-          </p>
-        )}
       </motion.div>
     </AppShell>
   );

@@ -1,0 +1,21 @@
+{
+  "appId": "com.farmztrade.app",
+  "appName": "FARMZTRADE",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "launchAutoHide": true,
+      "backgroundColor": "#136A3A",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#136A3A"
+    }
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -922,6 +922,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_or_create_test_user: {
+        Args: {
+          p_phone: string
+        }
+        Returns: {
+          email: string
+          password: string
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { ShieldCheck, ShieldMinus, Trash2, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -16,7 +15,6 @@ import { deleteUserAccount } from "@/lib/admin.functions";
 export function PeoplePanel({ adminId }: { adminId: string }) {
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
-  const removeAccount = useServerFn(deleteUserAccount);
 
   const people = useQuery({
     queryKey: ["admin-people", q],
@@ -59,7 +57,7 @@ export function PeoplePanel({ adminId }: { adminId: string }) {
     if (!window.confirm(`Remove ${name}? Their account and listings will be taken down.`)) return;
     setBusy(userId);
     try {
-      await removeAccount({ data: { userId, reason: "Removed by admin" } });
+      await deleteUserAccount({ userId, reason: "Removed by admin" });
       toast.success(`${name} removed.`);
       await people.refetch();
     } catch {

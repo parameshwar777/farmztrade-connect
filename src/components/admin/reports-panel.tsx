@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { Flag, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -16,7 +15,6 @@ import { formatINR, timeAgo } from "@/lib/format";
 /** Reported listings and users, with the reported post shown inline. */
 export function ReportsPanel({ adminId }: { adminId: string }) {
   const [busy, setBusy] = useState<string | null>(null);
-  const removeAccount = useServerFn(deleteUserAccount);
 
   const reports = useQuery({
     queryKey: ["admin-reports"],
@@ -66,7 +64,7 @@ export function ReportsPanel({ adminId }: { adminId: string }) {
     if (!window.confirm(`Remove ${name}? Their account and all listings will be taken down.`)) return;
     setBusy(reportId);
     try {
-      await removeAccount({ data: { userId, reason: "Removed after report" } });
+      await deleteUserAccount({ userId, reason: "Removed after report" });
       await supabase.from("reports").update({ status: "action_taken" }).eq("id", reportId);
       await reports.refetch();
       toast.success(`${name} removed.`);

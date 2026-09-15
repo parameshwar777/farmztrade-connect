@@ -19,8 +19,8 @@ export type ListingWithMeta = Listing & {
   seller: Pick<Profile, "id" | "full_name" | "avatar_url" | "verification" | "rating" | "created_at" | "city" | "district" | "state" | "phone"> | null;
 };
 
-const LISTING_SELECT =
-  "*, animal_images(url, sort_order), seller:profiles!animal_listings_seller_id_fkey(id, full_name, avatar_url, verification, rating, created_at, city, district, state, phone)";
+// NOTE: animal_listings has no FK to profiles, so we join manually via attachSellers
+const LISTING_SELECT = "*";
 
 /** profiles has no FK from listings, so join manually. */
 async function attachSellers(rows: Listing[]): Promise<ListingWithMeta[]> {
@@ -484,5 +484,3 @@ export async function fetchNotifications(userId: string): Promise<Notification[]
 export async function markNotificationsRead(userId: string) {
   await supabase.from("notifications").update({ read: true }).eq("user_id", userId).eq("read", false);
 }
-
-export { LISTING_SELECT };

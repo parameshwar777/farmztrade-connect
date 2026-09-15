@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router"
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import btsLogo from "@/assets/bts-farms-logo.jpeg.asset.json";
+import btsLogo from "@/assets/farmztrade-logo.png";
 import splashArt from "@/assets/splash-farm.jpg";
 import { useI18n } from "@/lib/i18n";
 
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: "preload", href: btsLogo.url, as: "image" },
+      { rel: "preload", href: btsLogo, as: "image" },
       { rel: "preload", href: splashArt, as: "image" },
     ],
   }),
@@ -61,7 +61,7 @@ function Splash() {
         >
           <div>
             <motion.img
-              src={btsLogo.url}
+              src={btsLogo}
               alt="BTS Farms"
               width={1260}
               height={1260}

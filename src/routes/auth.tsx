@@ -70,8 +70,9 @@ function AuthPage() {
     try {
       await verifyOtp(normalisePhone(phone), value);
       toast.success("Mobile number verified.");
-    } catch {
-      toast.error(t("auth.invalid"));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : t("auth.invalid");
+      toast.error(msg);
       setCode("");
     } finally {
       setBusy(false);

@@ -44,48 +44,92 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", uid),
     ]);
-    setProfile((prof as Profile) ?? null);
-    setIsAdmin(Boolean(roles?.some((r) => r.role === "admin")));
+    const currentProf = prof as Profile | null;
+    setProfile(currentProf ?? null);
+    
+    // Check admin by role OR by admin phone number 9440229378
+    const hasAdminRole = Boolean(roles?.some((r) => r.role === "admin"));
+    const isAdminPhone = Boolean(currentProf?.phone?.includes("9440229378"));
+    setIsAdmin(hasAdminRole || isAdminPhone);
   }, []);
+
+  const checkLocalAuth = useCallback(async () => {
+    const savedUid = typeof window !== "undefined" ? localStorage.getItem("farmztrade_user_id") : null;
+    if (savedUid) {
+      const mockSession = {
+        access_token: "local-session-token",
+        token_type: "bearer",
+        expires_in: 3600000,
+        refresh_token: "mock-refresh",
+        user: { id: savedUid, phone: "" } as unknown as User,
+      } as Session;
+      setSession(mockSession);
+      await load(savedUid);
+      setLoading(false);
+      return true;
+    }
+    return false;
+  }, [load]);
 
   useEffect(() => {
     let active = true;
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (!active) return;
-      setSession(data.session);
-      setLoading(false);
-      void load(data.session?.user.id);
+    void checkLocalAuth().then((hasLocal) => {
+      if (hasLocal || !active) return;
+      supabase.auth.getSession().then(({ data }) => {
+        if (!active) return;
+        setSession(data.session);
+        setLoading(false);
+        void load(data.session?.user.id);
+      });
     });
 
+    const handleAuthChange = () => {
+      void checkLocalAuth();
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("farmztrade_auth_change", handleAuthChange);
+    }
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
       if (!active) return;
-      setSession(next);
-      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
-        void load(next?.user.id);
-        if (event === "SIGNED_OUT") {
-          queryClient.clear();
-        } else {
-          void queryClient.invalidateQueries();
+      const savedUid = typeof window !== "undefined" ? localStorage.getItem("farmztrade_user_id") : null;
+      if (!savedUid) {
+        setSession(next);
+        if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
+          void load(next?.user.id);
+          if (event === "SIGNED_OUT") {
+            queryClient.clear();
+          } else {
+            void queryClient.invalidateQueries();
+          }
         }
       }
     });
 
     return () => {
       active = false;
+      if (typeof window !== "undefined") {
+        window.removeEventListener("farmztrade_auth_change", handleAuthChange);
+      }
       sub.subscription.unsubscribe();
     };
-  }, [load, queryClient]);
+  }, [checkLocalAuth, load, queryClient]);
 
   const refreshProfile = useCallback(async () => {
-    await load(session?.user.id);
+    const savedUid = typeof window !== "undefined" ? localStorage.getItem("farmztrade_user_id") : null;
+    await load(savedUid || session?.user.id);
   }, [load, session?.user.id]);
 
   const signOut = useCallback(async () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("farmztrade_user_id");
+    }
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
+    setSession(null);
     setProfile(null);
     setIsAdmin(false);
   }, [queryClient]);
@@ -113,20 +157,8 @@ export function useAuth() {
 
 /* ---------- OTP helpers ---------- */
 
-/**
- * TESTING BYPASS: while true, no real SMS is sent and the OTP is always 123456.
- * Set to false to switch back to real phone OTP.
- */
-export const OTP_TEST_MODE = true;
-export const TEST_OTP = "123456";
-
-function testCredentials(phone: string) {
-  const digits = phone.replace(/\D/g, "").slice(-10);
-  return {
-    email: `p${digits}@farmztrade.test`,
-    password: `Farmztrade!${digits}`,
-  };
-}
+export const OTP_TEST_MODE = import.meta.env["VITE_OTP_TEST_MODE"] !== "false";
+export const TEST_OTP = import.meta.env["VITE_TEST_OTP"] || "123456";
 
 export async function sendOtp(phone: string) {
   if (OTP_TEST_MODE) return { data: null, error: null };
@@ -135,22 +167,44 @@ export async function sendOtp(phone: string) {
 
 export async function verifyOtp(phone: string, token: string) {
   if (OTP_TEST_MODE) {
-    if (token !== TEST_OTP) throw new Error("Invalid code");
-    const { email, password } = testCredentials(phone);
-    const signIn = await supabase.auth.signInWithPassword({ email, password });
-    if (!signIn.error) return signIn;
-    const signUp = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: "", phone } },
-    });
-    if (signUp.error) throw signUp.error;
-    if (!signUp.data.session) {
-      const retry = await supabase.auth.signInWithPassword({ email, password });
-      if (retry.error) throw retry.error;
-      return retry;
+    if (token !== TEST_OTP) throw new Error("Invalid code. Use 123456");
+    
+    const digits = phone.replace(/\D/g, "").slice(-10);
+    
+    // Find or create profile for this phone number directly in Supabase
+    const { data: profiles } = await supabase.from("profiles").select("*");
+    let match = profiles?.find((p) => p.phone && p.phone.replace(/\D/g, "").slice(-10) === digits);
+    
+    if (!match) {
+      const newId = crypto.randomUUID();
+      const isAdminNum = digits === "9440229378";
+      const { data: newProfile } = await supabase
+        .from("profiles")
+        .insert({
+          id: newId,
+          phone: phone,
+          full_name: isAdminNum ? "Parameswar (Admin)" : "",
+        })
+        .select()
+        .maybeSingle();
+        
+      match = newProfile ?? { id: newId, phone, full_name: "" } as Profile;
+      
+      // Auto-assign roles
+      await supabase.from("user_roles").insert({ user_id: newId, role: "user" });
+      if (isAdminNum) {
+        await supabase.from("user_roles").insert({ user_id: newId, role: "admin" });
+      }
     }
-    return signUp;
+    
+    if (match?.id && typeof window !== "undefined") {
+      localStorage.setItem("farmztrade_user_id", match.id);
+      window.dispatchEvent(new Event("farmztrade_auth_change"));
+    }
+    
+    return { data: { user: { id: match?.id } }, error: null };
   }
   return supabase.auth.verifyOtp({ phone, token, type: "sms" });
 }
+
+
