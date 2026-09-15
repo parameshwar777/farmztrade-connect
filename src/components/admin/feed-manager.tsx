@@ -168,7 +168,8 @@ export function FeedManager({ adminId }: { adminId: string }) {
     setBusy(true);
     const res = draft.id
       ? await supabase.from("feed_products").update(payload).eq("id", draft.id)
-      : await supabase.from("feed_products").insert(payload);
+      : await supabase.from("feed_products").insert({ ...payload, status: "approved" });
+
     setBusy(false);
 
     if (res.error) return void toast.error("Could not save the product.");
@@ -205,6 +206,22 @@ export function FeedManager({ adminId }: { adminId: string }) {
       <Button className="h-12 w-full rounded-full" onClick={startNew}>
         <Plus className="mr-1 h-4 w-4" /> Add feed product
       </Button>
+
+      <Tabs value={view} onValueChange={(v) => setView(v as View)}>
+        <TabsList className="w-full rounded-full">
+          <TabsTrigger value="pending" className="flex-1 rounded-full">
+            Waiting
+          </TabsTrigger>
+          <TabsTrigger value="live" className="flex-1 rounded-full">
+            Live
+          </TabsTrigger>
+          <TabsTrigger value="all" className="flex-1 rounded-full">
+            All
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+
 
       {products.isLoading ? (
         <RowSkeleton count={3} />
