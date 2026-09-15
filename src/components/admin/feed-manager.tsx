@@ -69,10 +69,13 @@ function toDraft(p: FeedProduct): Draft {
   };
 }
 
+type View = "pending" | "live" | "all";
+
 export function FeedManager({ adminId }: { adminId: string }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false);
+  const [view, setView] = useState<View>("pending");
 
   const categories = useQuery({
     queryKey: ["admin-feed-categories"],
@@ -84,13 +87,47 @@ export function FeedManager({ adminId }: { adminId: string }) {
   });
 
   const products = useQuery({
-    queryKey: ["admin-feed-products"],
+    queryKey: ["admin-feed-products", view],
     queryFn: async () => {
-      const { data, error } = await supabase.from("feed_products").select("*").order("name");
+      let query = supabase.from("feed_products").select("*");
+      if (view === "pending") query = query.eq("status", "pending");
+      if (view === "live") query = query.eq("status", "approved");
+      const { data, error } = await query.order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
   });
+
+  async function review(p: FeedProduct, status: "approved" | "rejected") {
+    setBusy(true);
+    const { error } = await supabase
+      .from("feed_products")
+      .update({
+        status,
+        reject_reason: status === "rejected" ? "Product did not meet our feed store guidelines." : null,
+      })
+      .eq("id", p.id);
+    setBusy(false);
+    if (error) return void toast.error("Could not update this product.");
+    if (p.seller_id) {
+      await notify(
+        p.seller_id,
+        "feed_product",
+        status === "approved" ? "Your feed product is live" : "Feed product not approved",
+        status === "approved" ? `${p.name} is now in the feed store.` : "Please review the rules and submit again.",
+        "/sell-feed",
+      );
+    }
+    await logAdminAction(adminId, `feed_product_${status}`, {
+      table: "feed_products",
+      targetId: p.id,
+      note: p.name,
+    });
+    await products.refetch();
+    toast.success(status === "approved" ? "Product approved." : "Product rejected.");
+    return undefined;
+  }
+
 
   function startNew() {
     setDraft(emptyDraft(categories.data?.[0]?.slug ?? "cattle-feed"));
