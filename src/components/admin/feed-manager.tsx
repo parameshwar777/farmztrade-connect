@@ -3,16 +3,19 @@ import { Package, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { logAdminAction } from "@/components/admin/shared";
+import { logAdminAction, notify } from "@/components/admin/shared";
 import { SafeImage } from "@/components/media";
 import { EmptyState, RowSkeleton } from "@/components/states";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+
 import { supabase } from "@/integrations/supabase/client";
 import type { FeedProduct } from "@/lib/api";
 import { formatINR } from "@/lib/format";
@@ -234,7 +237,12 @@ export function FeedManager({ adminId }: { adminId: string }) {
                   <SafeImage path={p.image_url} alt={p.name} className="h-full w-full" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-display font-bold">{p.name}</p>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="truncate font-display font-bold">{p.name}</p>
+                    <Badge variant="secondary" className="rounded-full capitalize">
+                      {p.status}
+                    </Badge>
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     {[p.brand, p.weight_label, p.category_slug].filter(Boolean).join(" • ")}
                   </p>
@@ -246,9 +254,29 @@ export function FeedManager({ adminId }: { adminId: string }) {
                       </span>
                     ) : null}
                   </p>
-                  <p className="text-xs text-muted-foreground">Stock: {p.stock}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Stock: {p.stock} • {p.seller_id ? "Seller listing" : "Added by admin"}
+                  </p>
                 </div>
               </div>
+              {p.status !== "approved" && (
+                <div className="mt-3 flex gap-2">
+                  <Button size="sm" className="flex-1 rounded-full" disabled={busy} onClick={() => review(p, "approved")}>
+                    Approve
+                  </Button>
+                  {p.status === "pending" && (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="flex-1 rounded-full"
+                      disabled={busy}
+                      onClick={() => review(p, "rejected")}
+                    >
+                      Reject
+                    </Button>
+                  )}
+                </div>
+              )}
               <div className="mt-3 flex items-center gap-2">
                 <Button size="sm" variant="secondary" className="flex-1 rounded-full" onClick={() => startEdit(p)}>
                   <Pencil className="mr-1 h-4 w-4" /> Edit
@@ -267,6 +295,7 @@ export function FeedManager({ adminId }: { adminId: string }) {
                   <Switch checked={p.active} onCheckedChange={() => void toggleActive(p)} />
                 </div>
               </div>
+
             </li>
           ))}
         </ul>
