@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Search, ShoppingBag, Truck, X } from "lucide-react";
+import { PlusCircle, Search, ShoppingBag, Truck, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -87,12 +87,21 @@ function FeedStore() {
       title={t("feed.title")}
       showBrandHeader={false}
       headerRight={
-        <Button asChild size="sm" variant="secondary" className="relative rounded-full">
-          <Link to="/feed-cart">
-            <ShoppingBag className="mr-1 h-4 w-4" />
-            {cartCount > 0 ? cartCount : "Cart"}
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild size="sm" variant="secondary" className="rounded-full">
+            <Link to="/sell-feed">
+              <PlusCircle className="mr-1 h-4 w-4" />
+              Sell
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="secondary" className="relative rounded-full">
+            <Link to="/feed-cart">
+              <ShoppingBag className="mr-1 h-4 w-4" />
+              {cartCount > 0 ? cartCount : "Cart"}
+            </Link>
+          </Button>
+        </div>
+
       }
     >
       <SignInPrompt open={prompt} onOpenChange={setPrompt} />
