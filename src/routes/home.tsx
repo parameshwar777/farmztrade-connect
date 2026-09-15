@@ -9,7 +9,7 @@ import { AnimalCard } from "@/components/animal-card";
 import { AppShell, TrustNote } from "@/components/app-shell";
 import { SignInPrompt, useAuthAction } from "@/components/auth-gate";
 import { VerifiedBadge } from "@/components/badges";
-import { CategoryCard } from "@/components/category-card";
+
 import { SafeImage } from "@/components/media";
 import { CardGridSkeleton } from "@/components/states";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,8 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import heroImage from "@/assets/farm-hero.jpg";
 import {
-  fetchCategories,
   fetchFavoriteIds,
+
   fetchListings,
   fetchVerifiedSellers,
   toggleFavorite,
@@ -56,17 +56,12 @@ function Home() {
   const { guard, prompt, setPrompt } = useAuthAction();
   const [query, setQuery] = useState("");
 
-  const categories = useQuery({ queryKey: ["categories"], queryFn: fetchCategories, staleTime: 300_000 });
-  const featured = useQuery({
-    queryKey: ["listings", "featured"],
-    queryFn: () => fetchListings({ sort: "popular", limit: 6 }),
+  const all = useQuery({
+    queryKey: ["listings", "all-home"],
+    queryFn: () => fetchListings({ sort: "newest", limit: 60 }),
     staleTime: 60_000,
   });
-  const recent = useQuery({
-    queryKey: ["listings", "recent"],
-    queryFn: () => fetchListings({ sort: "newest", limit: 6 }),
-    staleTime: 60_000,
-  });
+
   const nearby = useQuery({
     queryKey: ["listings", "nearby", profile?.district],
     queryFn: () => fetchListings({ district: profile?.district ?? undefined, limit: 6 }),
