@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
+import { brokeredPreviewStorage } from "./previewAuthStorage";
 
 const SUPABASE_URL =
   import.meta.env["VITE_SUPABASE_URL"] ||
@@ -27,7 +28,7 @@ export const supabase = createClient<Database>(
   SUPABASE_ANON_KEY || "placeholder-key",
   {
     auth: {
-      storage: typeof window !== "undefined" ? localStorage : undefined,
+      storage: brokeredPreviewStorage(),
       persistSession: true,
       autoRefreshToken: true,
       // IMPORTANT: Must be false on Capacitor — file:// URLs cause auth to hang
