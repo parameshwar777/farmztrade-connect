@@ -1,13 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Home, PlusCircle, Search, User, Wheat } from "lucide-react";
+import { Home, PlusCircle, Search, Stethoscope, User, Wheat } from "lucide-react";
 
 import { useI18n, type TKey } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 const items: { to: string; icon: typeof Home; label: TKey; center?: boolean }[] = [
   { to: "/home", icon: Home, label: "nav.home" },
-  { to: "/search", icon: Search, label: "nav.search" },
+  { to: "/doctors", icon: Stethoscope, label: "nav.doctor" },
   { to: "/sell", icon: PlusCircle, label: "nav.sell", center: true },
   { to: "/feed", icon: Wheat, label: "nav.feed" },
   { to: "/profile", icon: User, label: "nav.profile" },
