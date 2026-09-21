@@ -484,3 +484,41 @@ export async function fetchNotifications(userId: string): Promise<Notification[]
 export async function markNotificationsRead(userId: string) {
   await supabase.from("notifications").update({ read: true }).eq("user_id", userId).eq("read", false);
 }
+
+/* ---------- veterinary doctors ---------- */
+
+export type VetDoctor = Database["public"]["Tables"]["vet_doctors"]["Row"];
+export type VetDoctorInput = Database["public"]["Tables"]["vet_doctors"]["Insert"];
+
+export type DoctorFilters = { q?: string; city?: string; district?: string };
+
+export async function fetchDoctors(filters: DoctorFilters = {}): Promise<VetDoctor[]> {
+  let query = supabase.from("vet_doctors").select("*").eq("active", true);
+  if (filters.city) query = query.ilike("city", `%${filters.city}%`);
+  if (filters.district) query = query.ilike("district", `%${filters.district}%`);
+  if (filters.q) {
+    const q = filters.q.replace(/[%,]/g, " ").trim();
+    query = query.or(
+      `full_name.ilike.%${q}%,hospital_name.ilike.%${q}%,city.ilike.%${q}%,district.ilike.%${q}%,specialization.ilike.%${q}%`,
+    );
+  }
+  const { data, error } = await query.order("created_at", { ascending: false }).limit(200);
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function fetchMyDoctorProfile(userId: string): Promise<VetDoctor | null> {
+  const { data, error } = await supabase.from("vet_doctors").select("*").eq("user_id", userId).maybeSingle();
+  if (error) throw error;
+  return data ?? null;
+}
+
+export async function saveDoctorProfile(userId: string, values: Omit<VetDoctorInput, "user_id">, id?: string) {
+  if (id) {
+    const { error } = await supabase.from("vet_doctors").update(values).eq("id", id);
+    if (error) throw error;
+    return;
+  }
+  const { error } = await supabase.from("vet_doctors").insert({ ...values, user_id: userId });
+  if (error) throw error;
+}

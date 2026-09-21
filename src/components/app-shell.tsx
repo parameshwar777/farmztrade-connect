@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 const desktopLinks = [
   { to: "/home", label: "Home" },
   { to: "/search", label: "Browse Animals" },
+  { to: "/doctors", label: "Doctors" },
   { to: "/feed", label: "Feed Store" },
   { to: "/sell", label: "Sell" },
   { to: "/chats", label: "Messages" },

@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as DoctorsRouteImport } from './routes/doctors'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as FeedCartRouteImport } from './routes/feed-cart'
 import { Route as HomeRouteImport } from './routes/home'
@@ -52,6 +53,11 @@ const AuthRoute = AuthRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DoctorsRoute = DoctorsRouteImport.update({
+  id: '/doctors',
+  path: '/doctors',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/doctors': typeof DoctorsRoute
   '/favorites': typeof FavoritesRoute
   '/feed-cart': typeof FeedCartRoute
   '/home': typeof HomeRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/doctors': typeof DoctorsRoute
   '/favorites': typeof FavoritesRoute
   '/feed-cart': typeof FeedCartRoute
   '/home': typeof HomeRoute
@@ -213,6 +221,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/doctors': typeof DoctorsRoute
   '/favorites': typeof FavoritesRoute
   '/feed-cart': typeof FeedCartRoute
   '/home': typeof HomeRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/checkout'
+    | '/doctors'
     | '/favorites'
     | '/feed-cart'
     | '/home'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/checkout'
+    | '/doctors'
     | '/favorites'
     | '/feed-cart'
     | '/home'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/checkout'
+    | '/doctors'
     | '/favorites'
     | '/feed-cart'
     | '/home'
@@ -320,6 +332,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
+  DoctorsRoute: typeof DoctorsRoute
   FavoritesRoute: typeof FavoritesRoute
   FeedCartRoute: typeof FeedCartRoute
   HomeRoute: typeof HomeRoute
@@ -370,6 +383,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/doctors': {
+      id: '/doctors'
+      path: '/doctors'
+      fullPath: '/doctors'
+      preLoaderRoute: typeof DoctorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -520,6 +540,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
+  DoctorsRoute: DoctorsRoute,
   FavoritesRoute: FavoritesRoute,
   FeedCartRoute: FeedCartRoute,
   HomeRoute: HomeRoute,
