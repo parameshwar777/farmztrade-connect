@@ -917,6 +917,72 @@ export type Database = {
         }
         Relationships: []
       }
+      vet_doctors: {
+        Row: {
+          about: string | null
+          active: boolean
+          address_line: string | null
+          available_hours: string | null
+          city: string | null
+          created_at: string
+          district: string | null
+          full_name: string
+          hospital_name: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          phone: string
+          pincode: string | null
+          specialization: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          village: string | null
+        }
+        Insert: {
+          about?: string | null
+          active?: boolean
+          address_line?: string | null
+          available_hours?: string | null
+          city?: string | null
+          created_at?: string
+          district?: string | null
+          full_name: string
+          hospital_name?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          phone: string
+          pincode?: string | null
+          specialization?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          village?: string | null
+        }
+        Update: {
+          about?: string | null
+          active?: boolean
+          address_line?: string | null
+          available_hours?: string | null
+          city?: string | null
+          created_at?: string
+          district?: string | null
+          full_name?: string
+          hospital_name?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          phone?: string
+          pincode?: string | null
+          specialization?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          village?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
