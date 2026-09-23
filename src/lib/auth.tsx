@@ -170,6 +170,7 @@ export async function verifyOtp(phone: string, token: string) {
     if (token !== TEST_OTP) throw new Error("Invalid code. Use 123456");
     
     const digits = phone.replace(/\D/g, "").slice(-10);
+    const isAdminNum = digits === "9440229378";
     
     // Find or create profile for this phone number directly in Supabase
     const { data: profiles } = await supabase.from("profiles").select("*");
@@ -177,23 +178,44 @@ export async function verifyOtp(phone: string, token: string) {
     
     if (!match) {
       const newId = crypto.randomUUID();
-      const isAdminNum = digits === "9440229378";
       const { data: newProfile } = await supabase
         .from("profiles")
         .insert({
           id: newId,
           phone: phone,
           full_name: isAdminNum ? "Parameswar (Admin)" : "",
+          city: isAdminNum ? "Hyderabad" : "",
+          district: isAdminNum ? "Hyderabad" : "",
+          state: "Andhra Pradesh",
+          profile_complete: true,
         })
         .select()
         .maybeSingle();
         
-      match = newProfile ?? { id: newId, phone, full_name: "" } as Profile;
+      match = newProfile ?? ({ id: newId, phone, full_name: isAdminNum ? "Parameswar (Admin)" : "", profile_complete: true } as Profile);
       
       // Auto-assign roles
       await supabase.from("user_roles").insert({ user_id: newId, role: "user" });
       if (isAdminNum) {
         await supabase.from("user_roles").insert({ user_id: newId, role: "admin" });
+      }
+    } else {
+      // Ensure admin profile has profile_complete: true
+      if (isAdminNum || !match.profile_complete) {
+        await supabase
+          .from("profiles")
+          .update({
+            profile_complete: true,
+            ...(isAdminNum && !match.full_name ? { full_name: "Parameswar (Admin)" } : {}),
+          })
+          .eq("id", match.id);
+        match.profile_complete = true;
+      }
+      if (isAdminNum) {
+        const { data: roles } = await supabase.from("user_roles").select("*").eq("user_id", match.id);
+        if (!roles?.some((r) => r.role === "admin")) {
+          await supabase.from("user_roles").insert({ user_id: match.id, role: "admin" });
+        }
       }
     }
     

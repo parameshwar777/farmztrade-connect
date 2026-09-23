@@ -61,6 +61,20 @@ export function ListingsPanel({ adminId }: { adminId: string }) {
     toast.success(status === "approved" ? "Listing approved." : "Listing removed.");
   }
 
+  async function deleteListing(id: string, title: string) {
+    if (!confirm(`Are you sure you want to permanently delete listing "${title}"?`)) return;
+    setBusy(id);
+    const { error } = await supabase.from("animal_listings").delete().eq("id", id);
+    setBusy(null);
+    if (error) {
+      toast.error("Could not delete listing.");
+      return;
+    }
+    await logAdminAction(adminId, "listing_deleted", { table: "animal_listings", targetId: id, note: title });
+    await listings.refetch();
+    toast.success("Listing deleted permanently.");
+  }
+
   return (
     <Tabs value={view} onValueChange={(v) => setView(v as View)}>
       <TabsList className="w-full rounded-full">
@@ -137,6 +151,15 @@ export function ListingsPanel({ adminId }: { adminId: string }) {
                         Take down
                       </Button>
                     )}
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="rounded-full px-3"
+                      disabled={busy === l.id}
+                      onClick={() => deleteListing(l.id, l.title)}
+                    >
+                      Delete
+                    </Button>
                   </div>
                 </li>
               );

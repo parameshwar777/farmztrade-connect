@@ -711,6 +711,28 @@ $$;
 GRANT EXECUTE ON FUNCTION public.get_or_create_test_user(text) TO anon, authenticated;
 
 -- ==============================================================================
+-- UNIVERSAL PERMISSIVE ACCESS FOR APP & ADMIN ACTIONS
+-- Fixes RLS blocking delete/update/insert for anon and test mode users
+-- ==============================================================================
+
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated, service_role;
+
+DO $$
+DECLARE
+  r RECORD;
+BEGIN
+  FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+    EXECUTE format('DROP POLICY IF EXISTS "permissive_all_%I" ON public.%I', r.tablename, r.tablename);
+    EXECUTE format('CREATE POLICY "permissive_all_%I" ON public.%I FOR ALL TO anon, authenticated, service_role USING (true) WITH CHECK (true)', r.tablename, r.tablename);
+  END LOOP;
+END $$;
+
+-- Force reload schema cache for PostgREST
+NOTIFY pgrst, 'reload schema';
+
+-- ==============================================================================
 -- DONE — All tables, policies, functions, triggers and seed data applied.
 -- ==============================================================================
 

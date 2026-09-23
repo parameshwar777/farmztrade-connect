@@ -38,7 +38,8 @@ function AuthPage() {
 
   useEffect(() => {
     if (loading || !user) return;
-    navigate({ to: profile?.profile_complete ? "/home" : "/profile-setup", replace: true });
+    const isOwnerAdmin = Boolean(profile?.phone?.includes("9440229378"));
+    navigate({ to: isOwnerAdmin || profile?.profile_complete ? "/home" : "/profile-setup", replace: true });
   }, [user, profile, loading, navigate]);
 
   useEffect(() => {
