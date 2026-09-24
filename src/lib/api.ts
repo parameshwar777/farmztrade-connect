@@ -212,6 +212,36 @@ export async function createOffer(input: {
     body: `You received an offer of ₹${input.amount.toLocaleString("en-IN")}.`,
     link: "/offers",
   });
+  // Open (or reuse) the chat so buyer and seller can talk about the offer straight away.
+  try {
+    const { data: existing } = await supabase
+      .from("conversations")
+      .select("id")
+      .eq("listing_id", input.listing_id)
+      .eq("buyer_id", input.buyer_id)
+      .maybeSingle();
+    let conversationId = existing?.id;
+    if (!conversationId) {
+      const { data: created } = await supabase
+        .from("conversations")
+        .insert({ listing_id: input.listing_id, buyer_id: input.buyer_id, seller_id: input.seller_id })
+        .select("id")
+        .single();
+      conversationId = created?.id;
+    }
+    if (conversationId) {
+      await sendMessage({
+        conversation_id: conversationId,
+        sender_id: input.buyer_id,
+        body: `Offer: ₹${input.amount.toLocaleString("en-IN")}${input.message ? ` — ${input.message}` : ""}`,
+        kind: "offer",
+        payload: { offer_id: data.id, amount: input.amount },
+        silent: true,
+      });
+    }
+  } catch (e) {
+    console.error("could not open chat for offer", e);
+  }
   return data;
 }
 
@@ -315,6 +345,8 @@ export async function sendMessage(input: {
   image_url?: string;
   kind?: string;
   payload?: Json;
+  /** Skip the chat notification (caller already notified). */
+  silent?: boolean;
 }) {
   const { error } = await supabase.from("messages").insert({
     conversation_id: input.conversation_id,
@@ -329,6 +361,21 @@ export async function sendMessage(input: {
     .from("conversations")
     .update({ last_message: input.body ?? (input.image_url ? "Photo" : "Update"), last_message_at: new Date().toISOString() })
     .eq("id", input.conversation_id);
+  if (input.silent) return;
+  const { data: conv } = await supabase
+    .from("conversations")
+    .select("buyer_id, seller_id")
+    .eq("id", input.conversation_id)
+    .maybeSingle();
+  if (!conv) return;
+  const recipient = conv.buyer_id === input.sender_id ? conv.seller_id : conv.buyer_id;
+  await supabase.from("notifications").insert({
+    user_id: recipient,
+    type: "message",
+    title: "New message",
+    body: (input.body ?? (input.image_url ? "Sent a photo" : "New update")).slice(0, 120),
+    link: `/chats/${input.conversation_id}`,
+  });
 }
 
 /* ---------- feed store ---------- */
