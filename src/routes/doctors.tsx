@@ -456,3 +456,12 @@ function Field({
     </div>
   );
 }
+
+/** Opens Google Maps directions — exact pin when the vet saved one, otherwise the address. */
+function directionsUrl(d: VetDoctor) {
+  const dest =
+    d.latitude != null && d.longitude != null
+      ? `${d.latitude},${d.longitude}`
+      : [d.hospital_name, d.address_line, d.village, d.city, d.district, d.state, d.pincode].filter(Boolean).join(", ");
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}`;
+}
