@@ -1,8 +1,10 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ArrowLeft, Bell, Heart, MessageCircle, ShoppingBag } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 import { BottomNav } from "@/components/bottom-nav";
 import { BrandLockup } from "@/components/brand";
@@ -51,6 +53,28 @@ export function AppShell({
     staleTime: 30_000,
   });
   const unread = (notifications ?? []).filter((n) => !n.read).length;
+
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`notif-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
+        (payload) => {
+          const n = payload.new as { title?: string; body?: string };
+          toast(n.title ?? "New notification", { description: n.body ?? undefined });
+          void queryClient.invalidateQueries({ queryKey: ["notifications", user.id] });
+          void queryClient.invalidateQueries({ queryKey: ["conversations"] });
+          void queryClient.invalidateQueries({ queryKey: ["offers"] });
+        },
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [user, queryClient]);
 
   return (
     <div className="min-h-screen bg-background">

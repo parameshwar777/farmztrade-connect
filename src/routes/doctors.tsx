@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { MapPin, Phone, Search, Stethoscope, X } from "lucide-react";
+import { MapPin, Navigation, Phone, Search, Stethoscope, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -244,11 +244,18 @@ function DoctorCard({ doctor }: { doctor: VetDoctor }) {
       {doctor.available_hours && <p className="mt-1 text-xs text-muted-foreground">Timings: {doctor.available_hours}</p>}
       {doctor.about && <p className="mt-2 line-clamp-2 text-sm">{doctor.about}</p>}
 
-      <Button asChild className="mt-3 w-full rounded-full">
-        <a href={`tel:${doctor.phone}`}>
-          <Phone className="mr-1.5 h-4 w-4" /> Call {doctor.phone}
-        </a>
-      </Button>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <Button asChild className="rounded-full">
+          <a href={directionsUrl(doctor)} target="_blank" rel="noopener noreferrer">
+            <Navigation className="mr-1.5 h-4 w-4" /> Directions
+          </a>
+        </Button>
+        <Button asChild variant="secondary" className="rounded-full">
+          <a href={`tel:${doctor.phone}`}>
+            <Phone className="mr-1.5 h-4 w-4" /> Call
+          </a>
+        </Button>
+      </div>
     </article>
   );
 }
@@ -266,6 +273,7 @@ function DoctorFormDialog({
 }) {
   const { user, profile } = useAuth();
   const [saving, setSaving] = useState(false);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
@@ -297,7 +305,24 @@ function DoctorFormDialog({
       pincode: existing?.pincode ?? profile?.pincode ?? "",
       about: existing?.about ?? "",
     });
+    setCoords(
+      existing?.latitude != null && existing?.longitude != null
+        ? { lat: Number(existing.latitude), lng: Number(existing.longitude) }
+        : null,
+    );
   }, [open, existing, profile]);
+
+  function captureLocation() {
+    if (!navigator.geolocation) return void toast.error("Location is not available on this device.");
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        setCoords({ lat: p.coords.latitude, lng: p.coords.longitude });
+        toast.success("Clinic location saved.");
+      },
+      () => toast.error("Please allow location access and try again."),
+      { enableHighAccuracy: true, timeout: 15000 },
+    );
+  }
 
   function set(key: keyof typeof form, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -329,6 +354,8 @@ function DoctorFormDialog({
           district: form.district.trim() || null,
           state: form.state.trim() || null,
           pincode: form.pincode.trim() || null,
+          latitude: coords?.lat ?? null,
+          longitude: coords?.lng ?? null,
           about: form.about.trim() || null,
         },
         existing?.id,
@@ -381,6 +408,10 @@ function DoctorFormDialog({
             <Field label="State" value={form.state} onChange={(v) => set("state", v)} />
           </div>
           <Field label="Pincode" value={form.pincode} onChange={(v) => set("pincode", v)} />
+          <Button type="button" variant="secondary" className="rounded-full" onClick={captureLocation}>
+            <MapPin className="mr-1.5 h-4 w-4" />
+            {coords ? "Clinic location saved — tap to update" : "Use my current location for directions"}
+          </Button>
           <div className="grid gap-1.5">
             <Label htmlFor="doctor-about">About</Label>
             <Textarea
@@ -424,4 +455,13 @@ function Field({
       <Input id={id} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
     </div>
   );
+}
+
+/** Opens Google Maps directions — exact pin when the vet saved one, otherwise the address. */
+function directionsUrl(d: VetDoctor) {
+  const dest =
+    d.latitude != null && d.longitude != null
+      ? `${d.latitude},${d.longitude}`
+      : [d.hospital_name, d.address_line, d.village, d.city, d.district, d.state, d.pincode].filter(Boolean).join(", ");
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}`;
 }
