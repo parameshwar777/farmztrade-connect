@@ -711,6 +711,49 @@ $$;
 GRANT EXECUTE ON FUNCTION public.get_or_create_test_user(text) TO anon, authenticated;
 
 -- ==============================================================================
+-- VET DOCTORS & REALTIME NOTIFICATIONS
+-- ==============================================================================
+
+CREATE TABLE IF NOT EXISTS public.vet_doctors (
+  id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid NOT NULL,
+  full_name text NOT NULL,
+  phone text NOT NULL,
+  hospital_name text,
+  specialization text,
+  about text,
+  available_hours text,
+  address_line text,
+  village text,
+  city text,
+  district text,
+  state text,
+  pincode text,
+  latitude numeric,
+  longitude numeric,
+  active boolean NOT NULL DEFAULT true,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_vet_doctors_city ON public.vet_doctors (city);
+CREATE INDEX IF NOT EXISTS idx_vet_doctors_district ON public.vet_doctors (district);
+CREATE INDEX IF NOT EXISTS idx_vet_doctors_user ON public.vet_doctors (user_id);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname='supabase_realtime' AND tablename='vet_doctors') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.vet_doctors;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname='supabase_realtime' AND tablename='notifications') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.notifications;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname='supabase_realtime' AND tablename='offers') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.offers;
+  END IF;
+END $$;
+
+-- ==============================================================================
 -- UNIVERSAL PERMISSIVE ACCESS FOR APP & ADMIN ACTIONS
 -- Fixes RLS blocking delete/update/insert for anon and test mode users
 -- ==============================================================================
