@@ -229,11 +229,10 @@ function Verification() {
           </div>
           <label className="mt-3 flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-border px-4 py-3">
             <FileText className="h-5 w-5 text-primary" />
-            <span className="text-sm font-semibold">{idDoc ? "ID proof added" : "Take photo or choose file"}</span>
+            <span className="text-sm font-semibold">{idDoc ? "ID proof added — tap to change" : "Take photo or choose from gallery"}</span>
             <input
               type="file"
               accept="image/*"
-              capture="environment"
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files?.[0];

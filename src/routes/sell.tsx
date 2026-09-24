@@ -65,7 +65,7 @@ type Draft = {
 };
 
 function Sell() {
-  const { user, profile, isVerified } = useAuth();
+  const { user, profile, isVerified, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -98,7 +98,7 @@ function Sell() {
     setDraft((d) => ({ ...d, [key]: value }));
   }
 
-  if (!isVerified) {
+  if (!isVerified && !isAdmin) {
     return (
       <AppShell title="Sell an animal" showBrandHeader={false}>
         <div className="mx-auto max-w-md rounded-4xl bg-card p-6 text-center card-shadow">
@@ -154,7 +154,7 @@ function Sell() {
         district: draft.district.trim(),
         state: draft.state.trim(),
         pincode: draft.pincode.trim() || null,
-        status: "pending",
+        status: isAdmin ? "approved" : "pending",
       })
       .select()
       .single();
@@ -172,7 +172,7 @@ function Sell() {
     }
 
     setBusy(false);
-    toast.success("Listing submitted for approval.");
+    toast.success(isAdmin ? "Listing is live." : "Listing submitted for approval.");
     navigate({ to: "/my-listings" });
   }
 
